@@ -1,34 +1,22 @@
 import java.util.Scanner;
+public class Display extends Login{
+    Scanner scanner = new Scanner;
+    //hi
 
-public class Display extends Account {
-    private Scanner scanner;
+    public void startScreen(){
+        System.out.println("1.login");
+        System.out.println("2.maak een account");
+        int keuzeStartScherm = scanner.nextInt();
 
-    public Display(String userName, String wachtWoord, Scanner scanner) {
-        super(userName, wachtWoord);
-        this.scanner = scanner;
-    }
-
-    public Display() {
-        super("", "");
-        this.scanner = new Scanner(System.in);
-    }
-
-    public void displayScreen() {
-        System.out.println("Gebruikersnaam?");
-        String gebruikersnaam = scanner.nextLine();
-        System.out.println("Wachtwoord?");
-        String wachtwoord = scanner.nextLine();
-
-        Account account = new Account(gebruikersnaam, wachtwoord);
-
-        if (isValidUser(account)) {
-            System.out.println("Welkom, " + account.getUserName() + "!");
-        } else {
-            System.out.println("Sorry, uw wachtwoord/gebruikersnaam is verkeerd.");
+        if (keuzeStartScherm == 1){
+            Login.loginScreen();
         }
-    }
+        else if (keuzeStartScherm == 2){
+            nieuwAccount();
+        }
+        else{
+            startScreen();
+        }
 
-    private boolean isValidUser(Account account) {
-        return account.getUserName().equals("brian") && account.getWachtWoord().equals("hot");
     }
 }
