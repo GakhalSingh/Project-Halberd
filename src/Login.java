@@ -1,17 +1,13 @@
 import java.util.Scanner;
 
 public class Login extends Account {
-    //hi
     private Scanner scanner;
+    private CSVWriter csvWriter;
 
-    public Login(String userName, String wachtWoord, Scanner scanner) {
+    public Login(String userName, String wachtWoord) {
         super(userName, wachtWoord);
-        this.scanner = scanner;
-    }
-
-    public Login() {
-        super("", "");
         this.scanner = new Scanner(System.in);
+        this.csvWriter = new CSVWriter("C:\\Users\\brian\\IdeaProjects\\Project-Halberd\\accounts.csv");
     }
 
     public void loginScreen() {
@@ -30,19 +26,22 @@ public class Login extends Account {
     }
 
     private boolean isValidUser(Account account) {
-        return account.getUserName().equals("brian") && account.getWachtWoord().equals("hot");
+        return account.getUserName().equals("brian") && account.getWachtwoord().equals("hot");
     }
-    public void nieuwAccount(){
-        System.out.println("maak een gebruikers naam");
+
+    public void nieuwAccount() {
+        System.out.println("Maak een gebruikersnaam");
         String nieuweNaam = scanner.nextLine();
-        System.out.println("je nieuwe wachtwoord");
+        System.out.println("Je nieuwe wachtwoord");
         String nieuwWachtwoord = scanner.nextLine();
-        System.out.println("herhaal het wachtwoord");
+        System.out.println("Herhaal het wachtwoord");
         String nieuwWachtwoord2 = scanner.nextLine();
-        if (nieuwWachtwoord.equals(nieuwWachtwoord2){
-            break;
-        }
-        else{
+
+        if (nieuwWachtwoord.equals(nieuwWachtwoord2)) {
+            csvWriter.CSVAccountadder(nieuweNaam, nieuwWachtwoord);
+            System.out.println("Account aangemaakt voor: " + nieuweNaam);
+        } else {
+            System.out.println("Wachtwoorden komen niet overeen, probeer opnieuw.");
             nieuwAccount();
         }
     }

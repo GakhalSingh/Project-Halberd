@@ -1,28 +1,17 @@
-import java.util.Scanner;
-
 public class Account {
-    //hi
-    protected String wachtWoord;
-    protected String userName;
+    private String userName;
+    private String wachtwoord;
 
-    public Account(String userName, String wachtWoord) {
+    public Account(String userName, String wachtwoord) {
         this.userName = userName;
-        this.wachtWoord = wachtWoord;
-    }
-
-    public String getWachtWoord() {
-        return wachtWoord;
-    }
-
-    public void setWachtWoord(String wachtWoord) {
-        this.wachtWoord = wachtWoord;
+        this.wachtwoord = wachtwoord;
     }
 
     public String getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public String getWachtwoord() {
+        return wachtwoord;
     }
 }

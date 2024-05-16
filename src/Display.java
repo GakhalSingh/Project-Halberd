@@ -1,22 +1,21 @@
 import java.util.Scanner;
-public class Display extends Login{
-    Scanner scanner = new Scanner;
-    //hi
 
-    public void startScreen(){
-        System.out.println("1.login");
-        System.out.println("2.maak een account");
-        int keuzeStartScherm = scanner.nextInt();
+public class Display extends Login {
+    private Scanner scanner = new Scanner(System.in);
+    private CSVWriter csvWriter = new CSVWriter("accounts.csv");
 
-        if (keuzeStartScherm == 1){
-            Login.loginScreen();
-        }
-        else if (keuzeStartScherm == 2){
+    public void startScreen() {
+        System.out.println("1. Login");
+        System.out.println("2. Maak een account");
+        int keuze = scanner.nextInt();
+
+        if (keuze == 1) {
+            loginScreen();
+        } else if (keuze == 2) {
             nieuwAccount();
-        }
-        else{
+        } else {
+            System.out.println("Ongeldige keuze. Probeer opnieuw.");
             startScreen();
         }
-
     }
 }
