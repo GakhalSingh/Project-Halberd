@@ -7,7 +7,7 @@ public class Main extends JFrame {
 
     public Main() {
 
-        setTitle("AI-assistent");
+        setTitle("AI-Assistant");
         setSize(1000, 600);
         setMinimumSize(new Dimension(800, 600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -25,11 +25,11 @@ public class Main extends JFrame {
         leftPanel.setOpaque(true);
         leftPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-        JLabel titleLabel = new JLabel("Bouw je eigen AI-assistent");
+        JLabel titleLabel = new JLabel("Creëer je eigen AI-assistant (Aia) 😲");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel descriptionLabel = new JLabel("Laat AI uw leerefficiëntie verbeteren");
+        JLabel descriptionLabel = new JLabel("Laat Aia uw leerefficiëntie verbeteren 📚");
         descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -53,14 +53,14 @@ public class Main extends JFrame {
         rightGbc.insets = new Insets(10, 10, 10, 10);
         rightGbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel quickStartLabel = new JLabel("We gaan begin!");
+        JLabel quickStartLabel = new JLabel("Laten we beginnen!");
         quickStartLabel.setFont(new Font("Arial", Font.BOLD, 18));
         rightGbc.gridx = 0;
         rightGbc.gridy = 0;
         rightGbc.gridwidth = 2;
         rightPanel.add(quickStartLabel, rightGbc);
 
-        JLabel usernameLabel = new JLabel("Gebruiksnaam");
+        JLabel usernameLabel = new JLabel("Gebruikersnaam");
         rightGbc.gridx = 0;
         rightGbc.gridy = 1;
         rightGbc.gridwidth = 1;
@@ -71,7 +71,7 @@ public class Main extends JFrame {
         rightGbc.gridy = 1;
         rightPanel.add(usernameField, rightGbc);
 
-        JLabel passwordLabel = new JLabel("Password");
+        JLabel passwordLabel = new JLabel("Wachtwoord");
         rightGbc.gridx = 0;
         rightGbc.gridy = 2;
         rightPanel.add(passwordLabel, rightGbc);
@@ -81,7 +81,7 @@ public class Main extends JFrame {
         rightGbc.gridy = 2;
         rightPanel.add(passwordField, rightGbc);
 
-        JButton registerButton = new JButton("Inlogeen");
+        JButton registerButton = new JButton("Log in");
         registerButton.setBackground(new Color(255, 255, 255));
         registerButton.setForeground(Color.BLACK);
         rightGbc.gridx = 1;
