@@ -13,8 +13,29 @@ public class Main extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        // 创建内容面板并设置背景图片
+        JPanel contentPane = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // 使用类加载器加载背景图片
+                ImageIcon icon = new ImageIcon(getClass().getResource("/resources/background.jpg"));
+                Image image = icon.getImage();
+                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
 
-        BackgroundPanel mainPanel = new BackgroundPanel("background.jpg");
+        setContentPane(contentPane);
+        contentPane.setLayout(new BorderLayout());
+
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
+        contentPane.add(panel, BorderLayout.CENTER);
+
+        setVisible(true);
+
+
+        BackgroundPanel mainPanel = new BackgroundPanel("src/resources/background.jpg");
         mainPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(20, 20, 20, 20);
@@ -53,6 +74,7 @@ public class Main extends JFrame {
         rightGbc.insets = new Insets(10, 10, 10, 10);
         rightGbc.fill = GridBagConstraints.HORIZONTAL;
 
+
         JLabel quickStartLabel = new JLabel("We gaan begin!");
         quickStartLabel.setFont(new Font("Arial", Font.BOLD, 18));
         rightGbc.gridx = 0;
@@ -81,7 +103,7 @@ public class Main extends JFrame {
         rightGbc.gridy = 2;
         rightPanel.add(passwordField, rightGbc);
 
-        JButton registerButton = new JButton("Inlogeen");
+        JButton registerButton = new JButton("Inloggen");
         registerButton.setBackground(new Color(52, 152, 219));
         registerButton.setForeground(Color.BLACK);
         rightGbc.gridx = 1;
@@ -104,5 +126,13 @@ public class Main extends JFrame {
             Main app = new Main();
             app.setVisible(true);
         });
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Main();
+            }
+        });
+
     }
 }
