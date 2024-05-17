@@ -7,7 +7,7 @@ public class Login extends Account {
     public Login(String userName, String wachtWoord) {
         super(userName, wachtWoord);
         this.scanner = new Scanner(System.in);
-        this.csvWriter = new CSVWriter("C:\\Users\\brian\\IdeaProjects\\Project-Halberd\\accounts.csv");
+        this.csvWriter = new CSVWriter("Project-Halberd\\src\\accounts.csv");
     }
 
     public void loginScreen() {
