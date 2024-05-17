@@ -14,7 +14,7 @@ public class Main extends JFrame {
         setLocationRelativeTo(null);
 
 
-        BackgroundPanel mainPanel = new BackgroundPanel("background.jpg");
+        BackgroundPanel mainPanel = new BackgroundPanel("resources/background.jpg");
         mainPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(20, 20, 20, 20);
@@ -26,11 +26,11 @@ public class Main extends JFrame {
         leftPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
         JLabel titleLabel = new JLabel("Creëer je eigen AI-assistant (Aia) 😲");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Osaka", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel descriptionLabel = new JLabel("Laat Aia uw leerefficiëntie verbeteren 📚");
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        descriptionLabel.setFont(new Font("Osaka", Font.PLAIN, 16));
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         leftPanel.add(titleLabel);
@@ -54,7 +54,7 @@ public class Main extends JFrame {
         rightGbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel quickStartLabel = new JLabel("Laten we beginnen!");
-        quickStartLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        quickStartLabel.setFont(new Font("Devanagari MT", Font.BOLD, 18));
         rightGbc.gridx = 0;
         rightGbc.gridy = 0;
         rightGbc.gridwidth = 2;
