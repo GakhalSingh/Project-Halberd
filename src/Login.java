@@ -1,13 +1,16 @@
+import java.util.Map;
 import java.util.Scanner;
 
 public class Login extends Account {
     private Scanner scanner;
     private CSVWriter csvWriter;
+    private CSVReader csvReader;
 
-    public Login(String userName, String wachtWoord) {
+    public Login(String userName, String wachtWoord, String csvFilePath) {
         super(userName, wachtWoord);
         this.scanner = new Scanner(System.in);
-        this.csvWriter = new CSVWriter("Project-Halberd\\src\\accounts.csv");
+        this.csvWriter = new CSVWriter(csvFilePath);
+        this.csvReader = new CSVReader(csvFilePath);
     }
 
     public void loginScreen() {
@@ -17,14 +20,15 @@ public class Login extends Account {
         Account account = new Account(gebruikersnaam, wachtwoord);
 
         if (isValidUser(account)) {
-
+            System.out.println("Login succesvol!");
         } else {
             System.out.println("Sorry, uw wachtwoord/gebruikersnaam is verkeerd.");
         }
     }
 
     private boolean isValidUser(Account account) {
-        return account.getUserName().equals("brian") && account.getWachtwoord().equals("hot");
+        Map<String, String> accounts = csvReader.readAccounts();
+        return accounts.containsKey(account.getUserName()) && accounts.get(account.getUserName()).equals(account.getWachtwoord());
     }
 
     public void nieuwAccount() {
