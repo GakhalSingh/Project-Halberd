@@ -20,4 +20,22 @@ public class CSVReader {
             e.printStackTrace();
         }
     }
+
+    public void dataReader(){
+        String filePath = "Project-Halberd\\src\\data.csv";
+        String line;
+        String csvSplitBy = ",";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(csvSplitBy);
+                for (String value : values) {
+                    System.out.print(value + " ");
+                }
+                System.out.println();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

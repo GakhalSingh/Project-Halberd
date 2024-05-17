@@ -22,7 +22,7 @@ public class Main extends JFrame {
 
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setOpaque(true); // 设置透明以显示背景
+        leftPanel.setOpaque(true);
         leftPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
         JLabel titleLabel = new JLabel("Bouw je eigen AI-assistent");
@@ -82,7 +82,7 @@ public class Main extends JFrame {
         rightPanel.add(passwordField, rightGbc);
 
         JButton registerButton = new JButton("Inlogeen");
-        registerButton.setBackground(new Color(52, 152, 219));
+        registerButton.setBackground(new Color(255, 255, 255));
         registerButton.setForeground(Color.BLACK);
         rightGbc.gridx = 1;
         rightGbc.gridy = 3;

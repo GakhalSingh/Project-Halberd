@@ -11,15 +11,13 @@ public class Login extends Account {
     }
 
     public void loginScreen() {
-        System.out.println("Gebruikersnaam?");
         String gebruikersnaam = scanner.nextLine();
-        System.out.println("Wachtwoord?");
         String wachtwoord = scanner.nextLine();
 
         Account account = new Account(gebruikersnaam, wachtwoord);
 
         if (isValidUser(account)) {
-            System.out.println("Welkom, " + account.getUserName() + "!");
+
         } else {
             System.out.println("Sorry, uw wachtwoord/gebruikersnaam is verkeerd.");
         }
