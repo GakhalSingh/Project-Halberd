@@ -15,7 +15,7 @@ public class Main extends JFrame {
             @Override
             public void run() {
                 Gui gui = new Gui();
-                gui.guistartscherm();
+                gui.guiStartScherm();
                 new Main();
             }
         });

@@ -3,7 +3,7 @@ import java.awt.*;
 
 public class Gui extends JFrame{
 
-    public void guistartscherm(){
+    public void guiStartScherm(){
         setTitle("AI-assistent");
         setSize(1000, 600);
         setMinimumSize(new Dimension(800, 600));
@@ -117,5 +117,8 @@ public class Gui extends JFrame{
 
 
         add(mainPanel);
+    }
+    public void guiMainPanneel(){
+
     }
 }
