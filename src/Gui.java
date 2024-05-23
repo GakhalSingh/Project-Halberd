@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Gui extends JFrame{
 
@@ -100,13 +102,13 @@ public class Gui extends JFrame{
         rightGbc.gridy = 2;
         rightPanel.add(passwordField, rightGbc);
 
-        JButton registerButton = new JButton("Inloggen");
-        registerButton.setBackground(new Color(52, 152, 219));
-        registerButton.setForeground(Color.BLACK);
+        JButton loginButton = new JButton("Inloggen");
+        loginButton.setBackground(new Color(52, 152, 219));
+        loginButton.setForeground(Color.BLACK);
         rightGbc.gridx = 1;
         rightGbc.gridy = 3;
         rightGbc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(registerButton, rightGbc);
+        rightPanel.add(loginButton, rightGbc);
 
 
         gbc.gridx = 1;
@@ -117,5 +119,28 @@ public class Gui extends JFrame{
 
 
         add(mainPanel);
+
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+
+                if (authenticate(username, password)) {
+                    JFrame mainFrame = new JFrame("Main Application");
+                    mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    mainFrame.setSize(800, 600);
+                    mainFrame.setVisible(true);
+                    dispose(); // close the login frame
+                } else {
+                    JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
+                }
+            }
+        });
     }
+
+    private static boolean authenticate(String username, String password) {
+
+        return "admin".equals(username) && "111111".equals(password);
+    }
+
 }
