@@ -2,10 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 
-public class Gui extends JFrame{
-
-    public void guistartscherm(){
+public class Gui extends JFrame {
+    public void guistartscherm() {
         setTitle("AI-assistent");
         setSize(1000, 600);
         setMinimumSize(new Dimension(800, 600));
@@ -140,7 +140,8 @@ public class Gui extends JFrame{
 
     private static boolean authenticate(String username, String password) {
 
-        return "admin".equals(username) && "111111".equals(password);
+        CSVReader reader = new CSVReader("accounts.csv");
+        Map<String, String> accounts = reader.readAccounts();
+        return accounts.containsKey(username) && accounts.get(username).equals(password);
     }
-
 }
