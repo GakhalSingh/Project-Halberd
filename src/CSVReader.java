@@ -29,7 +29,7 @@ public class CSVReader {
 
 
 
-public void dataReader(){
+    public void dataReader(){
         String filePath = "Project-Halberd\\src\\data.csv";
         String line;
         String csvSplitBy = ",";
