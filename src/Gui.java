@@ -4,8 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 
-public class Gui extends JFrame {
-    public void guistartscherm() {
+public class Gui extends JFrame{
+
+    public void guiStartScherm(){
         setTitle("AI-assistent");
         setSize(1000, 600);
         setMinimumSize(new Dimension(800, 600));
@@ -143,5 +144,8 @@ public class Gui extends JFrame {
         CSVReader reader = new CSVReader("accounts.csv");
         Map<String, String> accounts = reader.readAccounts();
         return accounts.containsKey(username) && accounts.get(username).equals(password);
+    }
+    public void guiMainPanneel(){
+
     }
 }
