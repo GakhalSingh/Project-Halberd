@@ -7,8 +7,8 @@ import java.util.Map;
 public class Gui extends JFrame{
 
     public void guiStartScherm(){
-        setTitle("AI-assistent");
-        setSize(1000, 600);
+        setTitle("AI Study Help Assistant (A.I.S.H.A.)");
+        setSize(1250, 750);
         setMinimumSize(new Dimension(800, 600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -46,12 +46,12 @@ public class Gui extends JFrame{
         leftPanel.setOpaque(true); // 设置透明以显示背景
         leftPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-        JLabel titleLabel = new JLabel("Bouw je eigen AI-assistent");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        JLabel titleLabel = new JLabel("Chat met A.I.S.H.A.!");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel descriptionLabel = new JLabel("Laat AI uw leerefficiëntie verbeteren");
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        JLabel descriptionLabel = new JLabel("Verbeter je leerervaring met Aisha (Artificial Intelligence Study Help Assistent!");
+        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         leftPanel.add(titleLabel);
@@ -75,14 +75,14 @@ public class Gui extends JFrame{
         rightGbc.fill = GridBagConstraints.HORIZONTAL;
 
 
-        JLabel quickStartLabel = new JLabel("We gaan begin!");
-        quickStartLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        JLabel quickStartLabel = new JLabel("Laten we beginnen!");
+        quickStartLabel.setFont(new Font("Arial", Font.BOLD, 20));
         rightGbc.gridx = 0;
         rightGbc.gridy = 0;
         rightGbc.gridwidth = 2;
         rightPanel.add(quickStartLabel, rightGbc);
 
-        JLabel usernameLabel = new JLabel("Gebruiksnaam");
+        JLabel usernameLabel = new JLabel("Gebruikersnaam/Email");
         rightGbc.gridx = 0;
         rightGbc.gridy = 1;
         rightGbc.gridwidth = 1;
@@ -93,7 +93,7 @@ public class Gui extends JFrame{
         rightGbc.gridy = 1;
         rightPanel.add(usernameField, rightGbc);
 
-        JLabel passwordLabel = new JLabel("Password");
+        JLabel passwordLabel = new JLabel("Wachtwoord");
         rightGbc.gridx = 0;
         rightGbc.gridy = 2;
         rightPanel.add(passwordLabel, rightGbc);
@@ -103,7 +103,7 @@ public class Gui extends JFrame{
         rightGbc.gridy = 2;
         rightPanel.add(passwordField, rightGbc);
 
-        JButton loginButton = new JButton("Inloggen");
+        JButton loginButton = new JButton("Login");
         loginButton.setBackground(new Color(52, 152, 219));
         loginButton.setForeground(Color.BLACK);
         rightGbc.gridx = 1;
