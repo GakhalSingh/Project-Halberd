@@ -126,10 +126,7 @@ public class Gui extends JFrame {
                 String password = new String(passwordField.getPassword());
 
                 if (authenticate(username, password)) {
-                    JFrame mainFrame = new JFrame("Main Application");
-                    mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    mainFrame.setSize(800, 600);
-                    mainFrame.setVisible(true);
+                    showMainApp();
                     dispose(); // close the login frame
                 } else {
                     JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
@@ -140,8 +137,109 @@ public class Gui extends JFrame {
 
     private static boolean authenticate(String username, String password) {
 
-        CSVReader reader = new CSVReader("accounts.csv");
-        Map<String, String> accounts = reader.readAccounts();
-        return accounts.containsKey(username) && accounts.get(username).equals(password);
+
+        return "admin".equals(username) && "111111".equals(password);
     }
+
+    private void showMainApp() {
+        JFrame mainFrame = new JFrame("Main Application");
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setSize(1200, 800);
+        mainFrame.setMinimumSize(new Dimension(800, 600));
+        mainFrame.setLocationRelativeTo(null);
+
+        // 主内容面板
+        JPanel contentPane = new JPanel(new BorderLayout());
+        mainFrame.setContentPane(contentPane);
+
+        // 左侧导航面板
+        JPanel navPanel = new JPanel();
+        navPanel.setLayout(new BorderLayout());
+        navPanel.setPreferredSize(new Dimension(250, getHeight()));
+        navPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
+
+        // 新对话按钮
+        JButton newConversationButton = new JButton("Niewe");
+        newConversationButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        newConversationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                startNewConversation();
+            }
+        });
+        navPanel.add(newConversationButton, BorderLayout.NORTH);
+
+        // 搜索历史列表
+        DefaultListModel<String> searchHistoryModel = new DefaultListModel<>();
+        JList<String> searchHistoryList = new JList<>(searchHistoryModel);
+        searchHistoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        searchHistoryList.setFixedCellHeight(50);
+        searchHistoryList.setFont(new Font("Arial", Font.PLAIN, 16));
+        searchHistoryList.setBackground(new Color(245, 245, 245));
+
+        JScrollPane navScrollPane = new JScrollPane(searchHistoryList);
+        navPanel.add(navScrollPane, BorderLayout.CENTER);
+
+        contentPane.add(navPanel, BorderLayout.WEST);
+
+        // 右侧主内容面板
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(Color.WHITE);
+
+        JTextArea mainContentArea = new JTextArea();
+        mainContentArea.setLineWrap(true);
+        mainContentArea.setWrapStyleWord(true);
+        mainContentArea.setMargin(new Insets(10, 10, 10, 10));
+        mainContentArea.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        JScrollPane scrollPane = new JScrollPane(mainContentArea);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        contentPane.add(mainPanel, BorderLayout.CENTER);
+
+        // 底部输入面板
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        JTextField inputField = new JTextField();
+        inputField.setFont(new Font("Arial", Font.PLAIN, 16));
+        JButton sendButton = new JButton("Send");
+        sendButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        sendButton.setBackground(new Color(245, 245, 245));
+        sendButton.setForeground(Color.WHITE);
+
+        bottomPanel.add(inputField, BorderLayout.CENTER);
+        bottomPanel.add(sendButton, BorderLayout.EAST);
+        contentPane.add(bottomPanel, BorderLayout.SOUTH);
+
+        // 发送按钮监听事件
+        sendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String inputText = inputField.getText().trim();
+                if (!inputText.isEmpty()) {
+                    searchHistoryModel.addElement(inputText);
+                    mainContentArea.append("User: " + inputText + "\n");
+                    inputField.setText("");
+                }
+            }
+        });
+
+        // 搜索历史选择监听事件
+        searchHistoryList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                String selectedValue = searchHistoryList.getSelectedValue();
+                if (selectedValue != null) {
+                    mainContentArea.append("Selected: " + selectedValue + "\n");
+                }
+            }
+        });
+
+        mainFrame.setVisible(true);
+    }
+
+    private void startNewConversation() {
+        // 实现新对话功能
+        JOptionPane.showMessageDialog(this, "New conversation started!");
+    }
+
+
 }
