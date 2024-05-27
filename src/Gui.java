@@ -136,7 +136,6 @@ public class Gui extends JFrame{
     }
 
     private static boolean authenticate(String username, String password) {
-
         CSVReader reader = new CSVReader("accounts.csv");
         Map<String, String> accounts = reader.readAccounts();
         return accounts.containsKey(username) && accounts.get(username).equals(password);

@@ -1,4 +1,3 @@
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -9,9 +8,9 @@ public class CSVWriter {
         this.bestandsnaam = bestandsnaam;
     }
 
-    public void CSVAccountadder(String gebruikersnaam, String email, String wachtwoord) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(this.bestandsnaam, true))) {
-            writer.write(gebruikersnaam + "," + email+ "," + wachtwoord + System.lineSeparator());
+    public void CSVAccountadder(String userName, String email, String wachtwoord) {
+        try (FileWriter writer = new FileWriter(bestandsnaam, true)) {
+            writer.append(userName).append(",").append(wachtwoord).append("\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
