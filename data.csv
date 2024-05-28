@@ -272,7 +272,7 @@ Subjects (ENG)
     --- Biology: "Advanced Biological Studies" - ISBN: 978-9990123456
     --- History: "The Future of Humanity" - ISBN: 978-9000000000
 
-    Matemáticas (SP)
+    - Matemáticas (SP)
     -- Álgebra
     --- Ecuaciones Lineales
     ---- Introducción a la resolución de ecuaciones lineales.
@@ -301,7 +301,7 @@ Subjects (ENG)
     --- Aplicaciones del Cálculo
     ---- Aplicaciones prácticas como optimización y cálculo de áreas.
 
-    Física
+    - Física
     -- Mecánica
     --- Cinemática
     ---- Estudio del movimiento, fuerzas e inercia.
@@ -330,7 +330,7 @@ Subjects (ENG)
     --- Resistencia Eléctrica
     ---- Comportamiento de corrientes eléctricas en materiales.
 
-    Biología
+    - Biología
     -- Biología Celular
     --- Estructura Celular
     ---- Anatomía y función de las células.
@@ -350,7 +350,7 @@ Subjects (ENG)
     --- Sostenibilidad
     ---- Principios del uso sostenible de recursos naturales.
 
-    Historia
+    - Historia
     -- Antigüedad
     --- Civilización Griega
     ---- Política, cultura y filosofía en la antigua Grecia.
@@ -370,7 +370,7 @@ Subjects (ENG)
     --- Globalización
     ---- Desarrollos en la globalización económica y cultural.
 
-    Libros por Clase y Asignatura
+    - Libros por Clase y Asignatura
     -- Clase 1
     --- Matemáticas: "Comienzos en Álgebra" - ISBN: 978-1234567890
     --- Física: "Introducción a la Física" - ISBN: 978-2345678901
@@ -407,7 +407,7 @@ Subjects (ENG)
     --- Biología: "Estudios Biológicos Avanzados" - ISBN: 978-9990123456
     --- Historia: "El Futuro de la Humanidad" - ISBN: 978-9000000000
 
-    Mathematik (DE)
+    - Mathematik (DE)
     -- Algebra
     --- Lineare Gleichungen
     ---- Einführung in das Lösen linearer Gleichungen.
@@ -436,7 +436,7 @@ Subjects (ENG)
     --- Anwendungen der Analysis
     ---- Praktische Anwendungen wie Optimierung und Flächenberechnung.
 
-    Physik
+    - Physik
     -- Mechanik
     --- Kinematik
     ---- Studium von Bewegung, Kräften und Trägheit.
@@ -465,7 +465,7 @@ Subjects (ENG)
     --- Elektrischer Widerstand
     ---- Verhalten von elektrischen Strömen in Materialien.
 
-    Biologie
+    - Biologie
     -- Zellbiologie
     --- Zellstruktur
     ---- Anatomie und Funktion von Zellen.

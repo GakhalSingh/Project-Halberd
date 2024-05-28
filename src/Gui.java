@@ -123,108 +123,119 @@ public class Gui extends JFrame{
 
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
+                String usernameOrEmail = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                if (authenticate(username, password)) {
+                if (authenticate(usernameOrEmail, password)) {
                     bootHomeScreen();
                 } else {
                     JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
                 }
             }
-        });
-    }
 
-    private static boolean authenticate(String username, String password) {
-        CSVReader reader = new CSVReader("accounts.csv");
-        Map<String, String> accounts = reader.readAccounts();
-        return accounts.containsKey(username) && accounts.get(username).equals(password);
-    }
-    public void bootHomeScreen() {
-        JFrame mainFrame = new JFrame("Main Application");
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(1250, 750);
-        mainFrame.setLayout(new BorderLayout());
 
-        // Create navigation panel
-        JPanel navPanel = new JPanel();
-        navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
-        navPanel.setBackground(new Color(230, 230, 230));
-        navPanel.setPreferredSize(new Dimension(200, mainFrame.getHeight()));
 
-        JButton profileButton = new JButton("Profiel");
-        JButton chatsButton = new JButton("Chats");
-        JButton logoutButton = new JButton("Logout");
 
-        profileButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        chatsButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        logoutButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        private static boolean authenticate(String usernameOrEmail, String password){
+            CSVReader reader = new CSVReader("accounts.csv");
+            Map<String, String[]> accounts = reader.readAccounts();
 
-        navPanel.add(profileButton);
-        navPanel.add(chatsButton);
-        navPanel.add(logoutButton);
-
-        mainFrame.add(navPanel, BorderLayout.WEST);
-
-        JPanel chatPanel = new JPanel(new BorderLayout());
-        chatPanel.setBackground(Color.WHITE);
-
-        JTextArea chatArea = new JTextArea();
-        chatArea.setEditable(false);
-        JScrollPane chatScrollPane = new JScrollPane(chatArea);
-        chatPanel.add(chatScrollPane, BorderLayout.CENTER);
-
-        JPanel inputPanel = new JPanel(new BorderLayout());
-        JTextField inputField = new JTextField();
-        JButton sendButton = new JButton("Send");
-        inputPanel.add(inputField, BorderLayout.CENTER);
-        inputPanel.add(sendButton, BorderLayout.EAST);
-
-        chatPanel.add(inputPanel, BorderLayout.SOUTH);
-
-        mainFrame.add(chatPanel, BorderLayout.CENTER);
-
-        // Add action listeners
-        profileButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(mainFrame, "Profiel");
-            }
-        });
-
-        chatsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(mainFrame, "Lijst van chats");
-            }
-        });
-
-        logoutButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.dispose();
-                bootWelcomeScreen();
-            }
-        });
-
-        sendButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String message = inputField.getText();
-                if (!message.isEmpty()) {
-                    chatArea.append("You: " + message + "\n");
-                    inputField.setText("");
-                    // hier code van ed handlen van berichten
+            for (String[] accountInfo : accounts.values()) {
+                if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
+                    return true;
                 }
             }
-        });
+            return false;
+        }
 
-        mainFrame.setVisible(true);
-        dispose();
-    }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new Gui().bootWelcomeScreen();
+
+            public void bootHomeScreen() {
+                JFrame mainFrame = new JFrame("Main Application");
+                mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                mainFrame.setSize(1250, 750);
+                mainFrame.setLayout(new BorderLayout());
+
+                // Create navigation panel
+                JPanel navPanel = new JPanel();
+                navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
+                navPanel.setBackground(new Color(230, 230, 230));
+                navPanel.setPreferredSize(new Dimension(200, mainFrame.getHeight()));
+
+                JButton profileButton = new JButton("Profiel");
+                JButton chatsButton = new JButton("Chats");
+                JButton logoutButton = new JButton("Logout");
+
+                profileButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+                chatsButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+                logoutButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+
+                navPanel.add(profileButton);
+                navPanel.add(chatsButton);
+                navPanel.add(logoutButton);
+
+                mainFrame.add(navPanel, BorderLayout.WEST);
+
+                JPanel chatPanel = new JPanel(new BorderLayout());
+                chatPanel.setBackground(Color.WHITE);
+
+                JTextArea chatArea = new JTextArea();
+                chatArea.setEditable(false);
+                JScrollPane chatScrollPane = new JScrollPane(chatArea);
+                chatPanel.add(chatScrollPane, BorderLayout.CENTER);
+
+                JPanel inputPanel = new JPanel(new BorderLayout());
+                JTextField inputField = new JTextField();
+                JButton sendButton = new JButton("Send");
+                inputPanel.add(inputField, BorderLayout.CENTER);
+                inputPanel.add(sendButton, BorderLayout.EAST);
+
+                chatPanel.add(inputPanel, BorderLayout.SOUTH);
+
+                mainFrame.add(chatPanel, BorderLayout.CENTER);
+
+                // Add action listeners
+                profileButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        JOptionPane.showMessageDialog(mainFrame, "Profiel");
+                    }
+                });
+
+                chatsButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        JOptionPane.showMessageDialog(mainFrame, "Lijst van chats");
+                    }
+                });
+
+                logoutButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        mainFrame.dispose();
+                        bootWelcomeScreen();
+                    }
+                });
+
+                sendButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        String message = inputField.getText();
+                        if (!message.isEmpty()) {
+                            chatArea.append("You: " + message + "\n");
+                            inputField.setText("");
+                            // hier code van ed handlen van berichten
+                        }
+                    }
+                });
+
+                mainFrame.setVisible(true);
+                dispose();
             }
-        });
-    }
-}
 
+            public static void main(String[] args) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new Gui().bootWelcomeScreen();
+                    }
+                });
+            }
+        })
+    ;}
+}

@@ -10,9 +10,10 @@ public class CSVWriter {
 
     public void CSVAccountadder(String userName, String email, String wachtwoord) {
         try (FileWriter writer = new FileWriter(bestandsnaam, true)) {
-            writer.append(userName).append(",").append(wachtwoord).append("\n");
+            writer.append(userName).append(",").append(wachtwoord).append(",").append(email).append("\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }

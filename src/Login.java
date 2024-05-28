@@ -29,7 +29,7 @@ public class Login extends Account {
     }
 
     private boolean isValidUser(Account account) {
-        Map<String, String> accounts = csvReader.readAccounts();
+        Map<String, String[]> accounts = csvReader.readAccounts();
 
         // Check if the input is an email or username and validate accordingly
         if (account.getEmail() != null) {
@@ -49,12 +49,18 @@ public class Login extends Account {
         System.out.println("Herhaal het wachtwoord");
         String nieuwWachtwoord2 = scanner.nextLine();
 
-        if (nieuwWachtwoord.equals(nieuwWachtwoord2)) {
-            csvWriter.CSVAccountadder(nieuweNaam, email, nieuwWachtwoord);
-            System.out.println("Account aangemaakt voor: " + nieuweNaam);
-        } else {
+        CSVReader reader = new CSVReader("accounts.csv");
+        Map<String, String[]> accounts = reader.readAccounts();
+
+        if (accounts.containsKey(nieuweNaam) || accounts.containsKey(email)) {
+            System.out.println("Gebruikersnaam of email bestaat al, probeer een andere.");
+            nieuwAccount();
+        } else if (!nieuwWachtwoord.equals(nieuwWachtwoord2)) {
             System.out.println("Wachtwoorden komen niet overeen, probeer opnieuw.");
             nieuwAccount();
+        } else {
+            csvWriter.CSVAccountadder(nieuweNaam, email, nieuwWachtwoord);
+            System.out.println("Account aangemaakt voor: " + nieuweNaam);
         }
     }
 }
