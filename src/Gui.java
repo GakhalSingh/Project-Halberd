@@ -103,7 +103,7 @@ public class Gui extends JFrame{
         rightGbc.gridy = 2;
         rightPanel.add(passwordField, rightGbc);
 
-        JButton loginButton = new JButton("Login");
+        JButton loginButton = new JButton("Inloggen");
         loginButton.setBackground(new Color(52, 152, 219));
         loginButton.setForeground(Color.BLACK);
         rightGbc.gridx = 1;
