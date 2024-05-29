@@ -51,7 +51,13 @@ public class CSVReader {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                content.append(line).append("\n");
+                String[] values = line.split(",");
+                if (values.length >= 3) {
+                    String username = values[0];
+                    String email = values[2];
+                    content.append(username).append("\n");
+                    content.append(email).append("\n");
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -120,6 +120,7 @@ public class Gui extends JFrame {
                 String password = new String(passwordField.getPassword());
 
                 if (authenticate(usernameOrEmail, password, Gui.this)) {
+                    String profileUsernameenEmail = usernameOrEmail;
                     bootHomeScreen();
                 } else {
                     JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
