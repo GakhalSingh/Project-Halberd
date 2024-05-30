@@ -43,7 +43,6 @@ public class CSVReader {
     }
 
     public void dataReader(){
-        //String filePath = "src/resources/data/data.csv";
         String line;
         String csvSplitBy = ",";
 
