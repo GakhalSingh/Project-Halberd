@@ -133,9 +133,12 @@ public class Gui extends JFrame {
         CSVReader reader = new CSVReader("accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
-        for (String[] accountInfo : accounts.values()) {
+        for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
+            String[] accountInfo = entry.getValue();
             if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
-                gui.setCsvContent(reader.readAllContent());
+                String username = accountInfo[0];
+                String email = accountInfo[2];
+                gui.setCsvContent("Username: " + username + "\nEmail: " + email);
                 return true;
             }
         }
