@@ -11,14 +11,14 @@ public class CSVReader {
         this.filePath = filePath;
     }
 
-    public Map<String, String> readAccounts() {
-        Map<String, String> accounts = new HashMap<>();
+    public Map<String, String[]> readAccounts() {
+        Map<String, String[]> accounts = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
-                if (values.length == 2) {
-                    accounts.put(values[0].trim(), values[1].trim());
+                if (values.length == 3) {
+                    accounts.put(values[0].trim(), new String[]{values[0].trim(), values[1].trim(), values[2].trim()});
                 }
             }
         } catch (IOException e) {
@@ -29,7 +29,7 @@ public class CSVReader {
 
 
 
-public void dataReader(){
+    public void dataReader(){
         String filePath = "Project-Halberd\\src\\data.csv";
         String line;
         String csvSplitBy = ",";
@@ -45,5 +45,23 @@ public void dataReader(){
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public String readAllContent() {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length >= 3) {
+                    String username = values[0];
+                    String email = values[2];
+                    content.append(username).append("\n");
+                    content.append(email).append("\n");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content.toString();
     }
 }
