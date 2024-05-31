@@ -49,7 +49,7 @@ public class Login extends Account {
         System.out.println("Herhaal het wachtwoord");
         String nieuwWachtwoord2 = scanner.nextLine();
 
-        CSVReader reader = new CSVReader("accounts.csv");
+        CSVReader reader = new CSVReader("data/accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
         if (accounts.containsKey(nieuweNaam) || accounts.containsKey(email)) {

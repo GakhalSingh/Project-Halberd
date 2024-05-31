@@ -36,7 +36,7 @@ public class ChatBox {
     }
 
     public String generateResponse(String message) {
-        Map<String, List<String>> data = readDataFromCSV("src/resources/data/data.csv");
+        Map<String, List<String>> data = readDataFromCSV("resources\\data\\data.csv");
         StringBuilder chatMessage = new StringBuilder();
         for (String keyword : data.keySet()) {
             if (message.toLowerCase().contains(keyword.toLowerCase())) {
