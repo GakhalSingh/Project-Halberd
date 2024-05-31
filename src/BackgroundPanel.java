@@ -23,7 +23,7 @@ public class BackgroundPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        ImageIcon icon = new ImageIcon(getClass().getResource("srge5yhyhmg/background.jpg")); // path niet fixen breekt applicatie
+        ImageIcon icon = new ImageIcon(getClass().getResource("/img/background.jpg")); // path niet fixen breekt applicatie
         Image image = icon.getImage();
         g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
     }

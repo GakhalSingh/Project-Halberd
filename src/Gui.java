@@ -7,10 +7,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Gui extends JFrame {
     private ChatBox chatBox;
     private String username;
+    private String csvContent;  // Field to store CSV content
+
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
@@ -18,70 +21,145 @@ public class Gui extends JFrame {
 
     public void bootWelcomeScreen() {
         setTitle("AI Study Help Assistant (A.I.S.H.A.)");
-        setSize(800, 600);
+        setSize(1250, 750);
+        setMinimumSize(new Dimension(800, 600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.setBackground(new Color(240, 240, 240));
+        JPanel contentPane = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageIcon icon = new ImageIcon(getClass().getResource("/img/background.jpg"));
+                Image image = icon.getImage();
+                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
 
-        JPanel loginPanel = new JPanel(new GridBagLayout());
-        loginPanel.setBackground(new Color(255, 255, 255));
-        loginPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        setContentPane(contentPane);
+        contentPane.setLayout(new BorderLayout());
 
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
+        contentPane.add(panel, BorderLayout.CENTER);
+
+        setVisible(true);
+
+        BackgroundPanel mainPanel = new BackgroundPanel("/img/background.jpg");
+        mainPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(20, 20, 20, 20);
+
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setOpaque(true);
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+
+        JLabel titleLabel = new JLabel("Chat met A.I.S.H.A.!");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel descriptionLabel = new JLabel("Verbeter je leerervaring met Aisha (Artificial Intelligence Study Help Assistent!");
+        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        leftPanel.add(titleLabel);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        leftPanel.add(descriptionLabel);
+
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 0, 20, 0);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 0.5;
+        gbc.weighty = 1.0;
+        mainPanel.add(leftPanel, gbc);
 
-        JLabel titleLabel = new JLabel("Welkom bij A.I.S.H.A.");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        loginPanel.add(titleLabel, gbc);
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+        rightPanel.setOpaque(false);
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        GridBagConstraints rightGbc = new GridBagConstraints();
+        rightGbc.insets = new Insets(10, 10, 10, 10);
+        rightGbc.fill = GridBagConstraints.HORIZONTAL;
 
-        gbc.gridy++;
-        JLabel usernameLabel = new JLabel("Gebruikersnaam/Email:");
-        loginPanel.add(usernameLabel, gbc);
+        JLabel quickStartLabel = new JLabel("Laten we beginnen!");
+        quickStartLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        rightGbc.gridx = 0;
+        rightGbc.gridy = 0;
+        rightGbc.gridwidth = 2;
+        rightPanel.add(quickStartLabel, rightGbc);
 
-        gbc.gridy++;
+        JLabel usernameLabel = new JLabel("Gebruikersnaam/Email");
+        rightGbc.gridx = 0;
+        rightGbc.gridy = 1;
+        rightGbc.gridwidth = 1;
+        rightPanel.add(usernameLabel, rightGbc);
+
         JTextField usernameField = new JTextField(20);
-        loginPanel.add(usernameField, gbc);
+        rightGbc.gridx = 1;
+        rightGbc.gridy = 1;
+        rightPanel.add(usernameField, rightGbc);
 
-        gbc.gridy++;
-        JLabel passwordLabel = new JLabel("Wachtwoord:");
-        loginPanel.add(passwordLabel, gbc);
+        JLabel passwordLabel = new JLabel("Wachtwoord");
+        rightGbc.gridx = 0;
+        rightGbc.gridy = 2;
+        rightPanel.add(passwordLabel, rightGbc);
 
-        gbc.gridy++;
         JPasswordField passwordField = new JPasswordField(20);
-        loginPanel.add(passwordField, gbc);
+        rightGbc.gridx = 1;
+        rightGbc.gridy = 2;
+        rightPanel.add(passwordField, rightGbc);
 
-        gbc.gridy++;
-        JButton loginButton = new JButton("Login");
-        styleButton(loginButton);
+        JButton loginButton = new JButton("Inloggen");
+        loginButton.setBackground(new Color(52, 152, 219));
+        loginButton.setForeground(Color.BLACK);
+        rightGbc.gridx = 1;
+        rightGbc.gridy = 3;
+        rightGbc.anchor = GridBagConstraints.CENTER;
+        rightPanel.add(loginButton, rightGbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 0.5;
+        mainPanel.add(rightPanel, gbc);
+
+        add(mainPanel);
+
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
+                String usernameOrEmail = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                if (authenticate(username, password)) {
-                    Gui.this.username = username;
+                if (authenticate(usernameOrEmail, password, Gui.this)) {
+                    String profileUsernameenEmail = usernameOrEmail;
                     bootHomeScreen();
                 } else {
-                    JOptionPane.showMessageDialog(Gui.this, "Ongeldige gebruikersnaam of wachtwoord");
+                    JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
                 }
             }
         });
-        loginPanel.add(loginButton, gbc);
-
-        contentPane.add(loginPanel, BorderLayout.CENTER);
-        setContentPane(contentPane);
-        setVisible(true);
     }
 
-    private boolean authenticate(String username, String password) {
-        return true; // Gaan we dit doen?
+    private static boolean authenticate(String usernameOrEmail, String password, Gui gui) {
+        CSVReader reader = new CSVReader("accounts.csv");
+        Map<String, String[]> accounts = reader.readAccounts();
+
+        for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
+            String[] accountInfo = entry.getValue();
+            if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
+                String username = accountInfo[0];
+                String email = accountInfo[2];
+                gui.setCsvContent("Username: " + username + "\nEmail: " + email);
+                return true;
+            }
+        }
+        return false;
     }
+
+    private void setCsvContent(String content) {
+        this.csvContent = content;
+    }
+
 
     public void bootHomeScreen() {
         setTitle("Chat met A.I.S.H.A.");

@@ -61,9 +61,6 @@ public class Login extends Account {
         } else {
             csvWriter.CSVAccountadder(nieuweNaam, email, nieuwWachtwoord);
             System.out.println("Account aangemaakt voor: " + nieuweNaam);
-        } else {
-            System.out.println("Wachtwoorden komen niet overeen, probeer opnieuw.");
-            nieuwAccount();
         }
     }
 }
