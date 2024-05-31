@@ -142,16 +142,18 @@ public class Gui extends JFrame {
         styleButton(profileButton);
         styleButton(infoButton);
         styleButton(logoutButton);
+        styleLogoutButton(logoutButton);
 
-        chatsButton.addActionListener(e -> showChats());
-        profileButton.addActionListener(e -> showProfile());
-        infoButton.addActionListener(e -> showInfo());
+        chatsButton.addActionListener(e -> showChatsScreen());
+        profileButton.addActionListener(e -> showProfileScreen());
+        infoButton.addActionListener(e -> showInfoScreen());
         logoutButton.addActionListener(e -> bootWelcomeScreen());
 
         navbar.add(chatsButton);
         navbar.add(profileButton);
         navbar.add(infoButton);
         navbar.add(logoutButton);
+
 
         return navbar;
     }
@@ -164,17 +166,49 @@ public class Gui extends JFrame {
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
-    private void showChats() {
+    private void styleLogoutButton(JButton button) {
+        button.setBackground(new Color(231, 76, 60));
+    }
+
+    private void showChatsScreen() {
         // eerst moeten we alle chats apart weten op te slaan - jin (ik werk hieraan)
     }
 
-    private void showProfile() {
+    private void showProfileScreen() {
         // we moeten bij de gebruiker classe nog de optie email toevoegen
     }
 
-    private void showInfo() {
-        // gewoon een pagina met info over aisha.
+    private void showInfoScreen() {
+        setTitle("Over A.I.S.H.A.");
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBackground(Color.WHITE);
+
+        JTextArea infoText = new JTextArea();
+        infoText.setEditable(false);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setLineWrap(true);
+        infoText.setWrapStyleWord(true);
+        infoText.setText("A.I.S.H.A. (AI Study Help Assistant) is een virtuele assistent ontworpen om studenten te helpen bij hun studie. "
+                + "Deze chatbot kan vragen beantwoorden, uitleg geven over verschillende onderwerpen en interactief leren stimuleren.\n\n"
+                + "Ontwikkeld door:\n"
+                + "- [Jin]\n"
+                + "- (Li)\n"
+                + "- |Joris|)\n"
+                + "- {Brian}\n");
+
+        JScrollPane scrollPane = new JScrollPane(infoText);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
     }
+
 
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
