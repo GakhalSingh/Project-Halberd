@@ -291,13 +291,18 @@ public class Gui extends JFrame {
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
-            appendToChat(chatPane, "<b>" + username + ":</b> " + message + "<br>");
+            String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
+            appendToChat(chatPane, usernameFormatted + message + "<br>");
+
             String response = chatBox.generateResponse(message);
-            appendToChat(chatPane, "<font color=\"#0080FF\"><b>Aisha:</b></font> " + response + "<br>");
+            String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
+            appendToChat(chatPane, responseFormatted + response + "<br>");
+
             inputField.setText("");
-            // SoundPlayer.playSound("src/resources/mp3/msn-sound_1.wav"); // Geluid afspelen, indien gewenst
+            // SoundPlayer.playSound("src/resources/mp3/msn-sound_1.wav"); // werkt niet
         }
     }
+
 
     private void appendToChat(JTextPane chatPane, String message) {
         HTMLDocument doc = (HTMLDocument) chatPane.getDocument();
