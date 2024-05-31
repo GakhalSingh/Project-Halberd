@@ -4,8 +4,9 @@ import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Gui extends JFrame {
     private ChatBox chatBox;
@@ -57,8 +58,7 @@ public class Gui extends JFrame {
 
         gbc.gridy++;
         JButton loginButton = new JButton("Login");
-        loginButton.setBackground(new Color(52, 152, 219));
-        loginButton.setForeground(Color.WHITE);
+        styleButton(loginButton);
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
@@ -80,7 +80,7 @@ public class Gui extends JFrame {
     }
 
     private boolean authenticate(String username, String password) {
-        return true;
+        return true; // Gaan we dit doen?
     }
 
     public void bootHomeScreen() {
@@ -91,8 +91,7 @@ public class Gui extends JFrame {
         JTextPane chatPane = new JTextPane();
         chatPane.setContentType("text/html");
         chatPane.setEditable(false);
-        chatPane.setFont(new Font("Montserrat", Font.PLAIN, 14)); // werkt niet rip
-
+        chatPane.setFont(new Font("Arial", Font.PLAIN, 14)); // beste lettertypo imo
 
         JScrollPane scrollPane = new JScrollPane(chatPane);
         contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -100,16 +99,18 @@ public class Gui extends JFrame {
         JPanel inputPanel = new JPanel(new BorderLayout());
         JTextField inputField = new JTextField();
         JButton sendButton = new JButton("Verzenden");
+        styleButton(sendButton);
 
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String message = inputField.getText().trim();
-                if (!message.isEmpty()) {
-                    appendToChat(chatPane, "<b>" + username + ":</b> " + message + "<br>");
-                    String response = chatBox.generateResponse(message);
-                    appendToChat(chatPane, "<font color=\"#0080FF\"><b>Aisha:</b></font> " + response + "<br>");
-                    inputField.setText("");
-                    // SoundPlayer.playSound("src/resources/mp3/msn-sound_1.wav"); // werkt ook niet
+                sendMessage(inputField, chatPane);
+            }
+        });
+
+        inputField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    sendMessage(inputField, chatPane);
                 }
             }
         });
@@ -118,11 +119,72 @@ public class Gui extends JFrame {
         inputPanel.add(sendButton, BorderLayout.EAST);
         contentPane.add(inputPanel, BorderLayout.SOUTH);
 
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
+    }
+
+    private JPanel createNavbar() {
+        JPanel navbar = new JPanel(new GridLayout(1, 4));
+        navbar.setBackground(new Color(52, 152, 219));
+
+        JButton chatsButton = new JButton("Chats");
+        JButton profileButton = new JButton("Profiel");
+        JButton infoButton = new JButton("Info");
+        JButton logoutButton = new JButton("Logout");
+
+        styleButton(chatsButton);
+        styleButton(profileButton);
+        styleButton(infoButton);
+        styleButton(logoutButton);
+
+        chatsButton.addActionListener(e -> showChats());
+        profileButton.addActionListener(e -> showProfile());
+        infoButton.addActionListener(e -> showInfo());
+        logoutButton.addActionListener(e -> bootWelcomeScreen());
+
+        navbar.add(chatsButton);
+        navbar.add(profileButton);
+        navbar.add(infoButton);
+        navbar.add(logoutButton);
+
+        return navbar;
+    }
+
+    private void styleButton(JButton button) {
+        button.setFocusPainted(false);
+        button.setBackground(new Color(52, 152, 219));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
+
+    private void showChats() {
+        // eerst moeten we alle chats apart weten op te slaan - jin (ik werk hieraan)
+    }
+
+    private void showProfile() {
+        // we moeten bij de gebruiker classe nog de optie email toevoegen
+    }
+
+    private void showInfo() {
+        // gewoon een pagina met info over aisha.
+    }
+
+    private void sendMessage(JTextField inputField, JTextPane chatPane) {
+        String message = inputField.getText().trim();
+        if (!message.isEmpty()) {
+            appendToChat(chatPane, "<b>" + username + ":</b> " + message + "<br>");
+            String response = chatBox.generateResponse(message);
+            appendToChat(chatPane, "<font color=\"#0080FF\"><b>Aisha:</b></font> " + response + "<br>");
+            inputField.setText("");
+            // SoundPlayer.playSound("src/resources/mp3/msn-sound_1.wav"); // Geluid afspelen, indien gewenst
+        }
     }
 
     private void appendToChat(JTextPane chatPane, String message) {
@@ -137,10 +199,6 @@ public class Gui extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new Gui().bootWelcomeScreen();
-            }
-        });
+        SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
     }
 }
