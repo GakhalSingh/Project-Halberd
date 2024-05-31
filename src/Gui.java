@@ -281,7 +281,7 @@ public class Gui extends JFrame {
         contentPane.add(navbar, BorderLayout.NORTH);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
