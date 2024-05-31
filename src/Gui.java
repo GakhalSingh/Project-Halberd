@@ -21,7 +21,7 @@ public class Gui extends JFrame {
 
     public void bootWelcomeScreen() {
         setTitle("AI Study Help Assistant (A.I.S.H.A.)");
-        setSize(1250, 750);
+        setSize(1000, 600);
         setMinimumSize(new Dimension(800, 600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -55,11 +55,11 @@ public class Gui extends JFrame {
         leftPanel.setOpaque(true);
         leftPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-        JLabel titleLabel = new JLabel("Chat met A.I.S.H.A.!");
+        JLabel titleLabel = new JLabel("Chat met A.I.S.H.A.");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel descriptionLabel = new JLabel("Verbeter je leerervaring met Aisha (Artificial Intelligence Study Help Assistent!");
+        JLabel descriptionLabel = new JLabel("Verbeter je leerervaring met Aisha!");
         descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -201,7 +201,7 @@ public class Gui extends JFrame {
         contentPane.add(navbar, BorderLayout.NORTH);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
@@ -281,7 +281,7 @@ public class Gui extends JFrame {
         contentPane.add(navbar, BorderLayout.NORTH);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
