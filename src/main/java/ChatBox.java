@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,7 @@ public class ChatBox {
     }
 
     public String generateResponse(String message) {
-        Map<String, List<String>> data = readDataFromCSV("resources\\data\\data.csv");
+        Map<String, List<String>> data = readDataFromCSV("data\\data.csv");
         StringBuilder chatMessage = new StringBuilder();
         for (String keyword : data.keySet()) {
             if (message.toLowerCase().contains(keyword.toLowerCase())) {
@@ -55,7 +56,7 @@ public class ChatBox {
 
     private Map<String, List<String>> readDataFromCSV(String filePath) {
         Map<String, List<String>> dataMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(filePath)))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(";");

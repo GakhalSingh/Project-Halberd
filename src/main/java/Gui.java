@@ -141,7 +141,7 @@ public class Gui extends JFrame {
     }
 
     private static boolean authenticate(String usernameOrEmail, String password, Gui gui) {
-        CSVReader reader = new CSVReader("resources\\data\\accounts.csv");
+        CSVReader reader = new CSVReader("data\\accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
         for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
