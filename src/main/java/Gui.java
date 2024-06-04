@@ -12,6 +12,7 @@ import java.util.Map;
 public class Gui extends JFrame {
     private ChatBox chatBox;
     private String username;
+    private String email;
     private String csvContent;  // Field to store CSV content
 
 
@@ -253,7 +254,32 @@ public class Gui extends JFrame {
     }
 
     private void showProfileScreen() {
-        // we moeten bij de gebruiker classe nog de optie email toevoegen
+        setTitle("Over " + username);
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBackground(Color.GREEN);
+
+        JTextArea infoText = new JTextArea();
+        infoText.setEditable(false);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setLineWrap(true);
+        infoText.setWrapStyleWord(true);
+        infoText.setText("Hallo " + username + "\n\n"
+                + "hier heb je wat informatie over je zelf XD: \n"
+                + username + "\n"
+                + email + "\n\n"
+                + "Informatie wijzigen? ");
+
+        JScrollPane scrollPane = new JScrollPane(infoText);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
     }
 
     private void showInfoScreen() {
