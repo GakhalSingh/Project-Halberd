@@ -13,8 +13,7 @@ public class Gui extends JFrame {
     private ChatBox chatBox;
     private String username;
     private String email;
-    private String csvContent;  // Field to store CSV content
-
+    private String csvContent;
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
@@ -131,8 +130,7 @@ public class Gui extends JFrame {
                 String usernameOrEmail = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                if (authenticate(usernameOrEmail, password, Gui.this)) {
-                    String profileUsernameenEmail = usernameOrEmail;
+                if (authenticate(usernameOrEmail, password)) {
                     bootHomeScreen();
                 } else {
                     JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
@@ -141,16 +139,16 @@ public class Gui extends JFrame {
         });
     }
 
-    private static boolean authenticate(String usernameOrEmail, String password, Gui gui) {
+    private boolean authenticate(String usernameOrEmail, String password) {
         CSVReader reader = new CSVReader("data\\accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
         for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
             String[] accountInfo = entry.getValue();
             if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
-                String username = accountInfo[0];
-                String email = accountInfo[2];
-                gui.setCsvContent("Username: " + username + "\nEmail: " + email);
+                this.username = accountInfo[0];
+                this.email = accountInfo[2];
+                this.csvContent = "Username: " + this.username + "\nEmail: " + this.email;
                 return true;
             }
         }
@@ -161,7 +159,6 @@ public class Gui extends JFrame {
         this.csvContent = content;
     }
 
-
     public void bootHomeScreen() {
         setTitle("Chat met A.I.S.H.A.");
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -170,7 +167,7 @@ public class Gui extends JFrame {
         JTextPane chatPane = new JTextPane();
         chatPane.setContentType("text/html");
         chatPane.setEditable(false);
-        chatPane.setFont(new Font("Arial", Font.PLAIN, 14)); // beste lettertypo imo
+        chatPane.setFont(new Font("Arial", Font.PLAIN, 14));
 
         JScrollPane scrollPane = new JScrollPane(chatPane);
         contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -220,7 +217,6 @@ public class Gui extends JFrame {
         styleButton(chatsButton);
         styleButton(profileButton);
         styleButton(infoButton);
-        styleButton(logoutButton);
         styleLogoutButton(logoutButton);
 
         chatsButton.addActionListener(e -> showChatsScreen());
@@ -232,7 +228,6 @@ public class Gui extends JFrame {
         navbar.add(profileButton);
         navbar.add(infoButton);
         navbar.add(logoutButton);
-
 
         return navbar;
     }
@@ -256,8 +251,6 @@ public class Gui extends JFrame {
     private void showProfileScreen() {
         setTitle("Over " + username);
         JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.setBackground(Color.GREEN);
-
         JTextArea infoText = new JTextArea();
         infoText.setEditable(false);
         infoText.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -313,7 +306,6 @@ public class Gui extends JFrame {
         setVisible(true);
     }
 
-
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
@@ -325,10 +317,8 @@ public class Gui extends JFrame {
             appendToChat(chatPane, responseFormatted + response + "<br>");
 
             inputField.setText("");
-            // SoundPlayer.playSound("src/resources/mp3/msn-sound_1.wav"); // werkt niet
         }
     }
-
 
     private void appendToChat(JTextPane chatPane, String message) {
         HTMLDocument doc = (HTMLDocument) chatPane.getDocument();
