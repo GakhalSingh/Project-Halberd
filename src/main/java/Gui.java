@@ -123,20 +123,6 @@ public class Gui extends JFrame {
         gbc.weightx = 0.5;
         mainPanel.add(rightPanel, gbc);
 
-        JButton nieuwAccountButton = new JButton("Nieuw account");
-        nieuwAccountButton.setBackground(new Color(52, 152, 219));
-        nieuwAccountButton.setForeground(Color.BLACK);
-        rightGbc.gridx = 1;
-        rightGbc.gridy = 4;
-        rightGbc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(nieuwAccountButton, rightGbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 0.5;
-        mainPanel.add(rightPanel, gbc);
-
         contentPane.add(mainPanel, BorderLayout.CENTER);
 
         loginButton.addActionListener(new ActionListener() {
@@ -149,6 +135,19 @@ public class Gui extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
                 }
+            }
+        });
+        JButton nieuwAccountButton = new JButton("Nieuw account");
+        nieuwAccountButton.setBackground(new Color(52, 152, 219));
+        nieuwAccountButton.setForeground(Color.BLACK);
+        rightGbc.gridx = 1;
+        rightGbc.gridy = 4;
+        rightGbc.anchor = GridBagConstraints.CENTER;
+        rightPanel.add(nieuwAccountButton, rightGbc);
+
+        nieuwAccountButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                bootNewAccountScreen();
             }
         });
     }
@@ -350,6 +349,50 @@ public class Gui extends JFrame {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void bootNewAccountScreen() {
+        setTitle("Nieuw account aanmaken");
+        JPanel contentPane = new JPanel(new GridLayout(5, 2, 10, 10));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel nameLabel = new JLabel("Naam:");
+        JTextField nameField = new JTextField(20);
+        JLabel emailLabel = new JLabel("Email:");
+        JTextField emailField = new JTextField(20);
+        JLabel passwordLabel = new JLabel("Wachtwoord:");
+        JPasswordField passwordField = new JPasswordField(20);
+        JLabel confirmPasswordLabel = new JLabel("Bevestig Wachtwoord:");
+        JPasswordField confirmPasswordField = new JPasswordField(20);
+
+        contentPane.add(nameLabel);
+        contentPane.add(nameField);
+        contentPane.add(emailLabel);
+        contentPane.add(emailField);
+        contentPane.add(passwordLabel);
+        contentPane.add(passwordField);
+        contentPane.add(confirmPasswordLabel);
+        contentPane.add(confirmPasswordField);
+
+        JButton createAccountButton = new JButton("Account aanmaken");
+        createAccountButton.addActionListener(e -> {
+            String name = nameField.getText();
+            String email = emailField.getText();
+            String password = new String(passwordField.getPassword());
+            String confirmPassword = new String(confirmPasswordField.getPassword());
+            String result = Login.nieuwAccount(name, email, password, confirmPassword);
+            JOptionPane.showMessageDialog(this, result);
+
+            if (result.equals("Account aangemaakt voor: " + name)) {
+                bootWelcomeScreen();
+            }
+        });
+
+        contentPane.add(new JLabel());
+        contentPane.add(createAccountButton);
+
+        setContentPane(contentPane);
+        setVisible(true);
     }
 
     public static void main(String[] args) {
