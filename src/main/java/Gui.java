@@ -123,7 +123,21 @@ public class Gui extends JFrame {
         gbc.weightx = 0.5;
         mainPanel.add(rightPanel, gbc);
 
-        add(mainPanel);
+        JButton nieuwAccountButton = new JButton("Nieuw account");
+        nieuwAccountButton.setBackground(new Color(52, 152, 219));
+        nieuwAccountButton.setForeground(Color.BLACK);
+        rightGbc.gridx = 1;
+        rightGbc.gridy = 4;
+        rightGbc.anchor = GridBagConstraints.CENTER;
+        rightPanel.add(nieuwAccountButton, rightGbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 0.5;
+        mainPanel.add(rightPanel, gbc);
+
+        contentPane.add(mainPanel, BorderLayout.CENTER);
 
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -239,9 +253,16 @@ public class Gui extends JFrame {
         button.setFont(new Font("Arial", Font.BOLD, 12));
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
+    private void selectedStyleButton(JButton button) {
+        button.setFocusPainted(false);
+        button.setBackground(new Color(120, 218, 210));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
 
     private void styleLogoutButton(JButton button) {
-        button.setBackground(new Color(231, 76, 60));
+        button.setBackground(new Color(222, 102, 90));
     }
 
     private void showChatsScreen() {
