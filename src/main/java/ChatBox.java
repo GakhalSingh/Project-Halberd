@@ -1,3 +1,5 @@
+import halberd.ai.AI;
+import halberd.ai.OllamaMemoryModel;
 import halberd.ai.OllamaModel;
 
 import java.io.BufferedReader;
@@ -12,11 +14,11 @@ import java.util.Map;
 public class ChatBox {
     private List<ChatMessage> messages;
 
-    private final OllamaModel model;
+    private final AI model;
 
     public ChatBox(List<ChatMessage> messages) {
         this.messages = messages;
-        this.model = new OllamaModel();
+        this.model = new OllamaMemoryModel();
     }
 
     public List<ChatMessage> getMessages() {
