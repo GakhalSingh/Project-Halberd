@@ -1,5 +1,4 @@
 import halberd.ai.AI;
-import halberd.ai.OllamaMemoryModel;
 import halberd.ai.OllamaModel;
 
 import java.io.BufferedReader;
@@ -18,7 +17,7 @@ public class ChatBox {
 
     public ChatBox(List<ChatMessage> messages) {
         this.messages = messages;
-        this.model = new OllamaMemoryModel();
+        this.model = new OllamaModel();
     }
 
     public List<ChatMessage> getMessages() {
