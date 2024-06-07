@@ -150,6 +150,8 @@ public class Gui extends JFrame {
                 bootNewAccountScreen();
             }
         });
+        revalidate();
+        repaint();
     }
 
     private boolean authenticate(String usernameOrEmail, String password) {
