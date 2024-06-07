@@ -1,3 +1,6 @@
+import halberd.ai.AI;
+import halberd.ai.OllamaModel;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,8 +13,11 @@ import java.util.Map;
 public class ChatBox {
     private List<ChatMessage> messages;
 
+    private final AI model;
+
     public ChatBox(List<ChatMessage> messages) {
         this.messages = messages;
+        this.model = new OllamaModel();
     }
 
     public List<ChatMessage> getMessages() {
@@ -37,21 +43,22 @@ public class ChatBox {
     }
 
     public String generateResponse(String message) {
-        Map<String, List<String>> data = readDataFromCSV("data\\data.csv");
-        StringBuilder chatMessage = new StringBuilder();
-        for (String keyword : data.keySet()) {
-            if (message.toLowerCase().contains(keyword.toLowerCase())) {
-                List<String> responses = data.get(keyword);
-                for (String resp : responses) {
-                    chatMessage.append(resp).append("\n");
-                }
-            }
-        }
-        if (chatMessage.length() == 0) {
-            return "Ik begreep je niet, kun je het in andere woorden vragen? 😓";
-        } else {
-            return chatMessage.toString();
-        }
+        return model.chat(message);
+//        Map<String, List<String>> data = readDataFromCSV("data\\data.csv");
+//        StringBuilder chatMessage = new StringBuilder();
+//        for (String keyword : data.keySet()) {
+//            if (message.toLowerCase().contains(keyword.toLowerCase())) {
+//                List<String> responses = data.get(keyword);
+//                for (String resp : responses) {
+//                    chatMessage.append(resp).append("\n");
+//                }
+//            }
+//        }
+//        if (chatMessage.length() == 0) {
+//            return "Ik begreep je niet, kun je het in andere woorden vragen? 😓";
+//        } else {
+//            return chatMessage.toString();
+//        }
     }
 
     private Map<String, List<String>> readDataFromCSV(String filePath) {
