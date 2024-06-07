@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -295,12 +298,80 @@ public class Gui extends JFrame {
         JPanel navbar = createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
+
+
+        // wijzen button
+        JButton modifyButton = new JButton("Wijzijgen");
+        modifyButton.addActionListener(e -> showModifyDialog());
+        contentPane.add(modifyButton, BorderLayout.SOUTH);
+
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
+
     }
+
+    private void showModifyDialog() {
+        JTextField newUsernameField = new JTextField(username, 20);
+        JPasswordField newPasswordField = new JPasswordField(20);
+
+        JPanel panel = new JPanel(new GridLayout(2, 2));
+        panel.add(new JLabel("Nieuwe gebruikersnaam:"));
+        panel.add(newUsernameField);
+        panel.add(new JLabel("Nieuw wachtwoord:"));
+        panel.add(newPasswordField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Wijzig gebruikersinformatie", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            String newUsername = newUsernameField.getText();
+            String newPassword = new String(newPasswordField.getPassword());
+            if (!newUsername.isEmpty() && !newPassword.isEmpty()) {
+                if (updateAccountInfo(username, newUsername, newPassword)) {
+                    username = newUsername;
+                    JOptionPane.showMessageDialog(this, "Gebruikersinformatie bijgewerkt");
+                    showProfileScreen(); // 刷新页面以显示更新后的信息
+                } else {
+                    JOptionPane.showMessageDialog(this, "Fout bij het bijwerken van de gebruikersinformatie");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Gebruikersnaam en wachtwoord mogen niet leeg zijn");
+            }
+        }
+
+    }
+
+    private boolean updateAccountInfo(String oldUsername, String newUsername, String newPassword) {
+        CSVReader reader = new CSVReader("data\\accounts.csv");
+        Map<String, String[]> accounts = reader.readAccounts();
+
+        if (accounts.containsKey(oldUsername)) {
+            String[] accountInfo = accounts.get(oldUsername);
+            accountInfo[0] = newUsername;
+            accountInfo[1] = newPassword;
+            accounts.remove(oldUsername);
+            accounts.put(newUsername, accountInfo);
+            return saveAccountsToCSV(accounts);
+        }
+        return false;
+    }
+
+    private boolean saveAccountsToCSV(Map<String, String[]> accounts) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data\\accounts.csv"))) {
+            for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
+                String[] accountInfo = entry.getValue();
+                writer.write(String.join(",", accountInfo));
+                writer.newLine();
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     private void showInfoScreen() {
         setTitle("Over A.I.S.H.A.");
