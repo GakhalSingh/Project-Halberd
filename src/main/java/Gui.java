@@ -353,8 +353,21 @@ public class Gui extends JFrame {
 
     public void bootNewAccountScreen() {
         setTitle("Nieuw account aanmaken");
-        JPanel contentPane = new JPanel(new GridLayout(5, 2, 10, 10));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel contentPane = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageIcon icon = new ImageIcon(getClass().getResource("/img/background.jpg"));
+                Image image = icon.getImage();
+                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        formPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel nameLabel = new JLabel("Naam:");
         JTextField nameField = new JTextField(20);
@@ -365,16 +378,39 @@ public class Gui extends JFrame {
         JLabel confirmPasswordLabel = new JLabel("Bevestig Wachtwoord:");
         JPasswordField confirmPasswordField = new JPasswordField(20);
 
-        contentPane.add(nameLabel);
-        contentPane.add(nameField);
-        contentPane.add(emailLabel);
-        contentPane.add(emailField);
-        contentPane.add(passwordLabel);
-        contentPane.add(passwordField);
-        contentPane.add(confirmPasswordLabel);
-        contentPane.add(confirmPasswordField);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(nameLabel, gbc);
+        gbc.gridx = 1;
+        formPanel.add(nameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(emailLabel, gbc);
+        gbc.gridx = 1;
+        formPanel.add(emailField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(passwordLabel, gbc);
+        gbc.gridx = 1;
+        formPanel.add(passwordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        formPanel.add(confirmPasswordLabel, gbc);
+        gbc.gridx = 1;
+        formPanel.add(confirmPasswordField, gbc);
 
         JButton createAccountButton = new JButton("Account aanmaken");
+        styleButton(createAccountButton);
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.CENTER;
+        formPanel.add(createAccountButton, gbc);
+
+        contentPane.add(formPanel, BorderLayout.CENTER);
+
         createAccountButton.addActionListener(e -> {
             String name = nameField.getText();
             String email = emailField.getText();
@@ -388,12 +424,13 @@ public class Gui extends JFrame {
             }
         });
 
-        contentPane.add(new JLabel());
-        contentPane.add(createAccountButton);
-
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
