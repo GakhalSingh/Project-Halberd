@@ -1,10 +1,11 @@
+import java.io.FileReader;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Login extends Account {
     private Scanner scanner;
-    private CSVWriter csvWriter;
-    private CSVReader csvReader;
+    private static CSVWriter csvWriter = new CSVWriter("resources\\data\\accounts.csv");
+    private static CSVReader csvReader = new CSVReader("resources\\data\\accounts.csv");
 
     public Login(String userName, String email, String wachtWoord, String csvFilePath) {
         super(userName, email, wachtWoord);
@@ -39,28 +40,19 @@ public class Login extends Account {
         }
     }
 
-    public void nieuwAccount() {
-        System.out.println("Maak een gebruikersnaam");
-        String nieuweNaam = scanner.nextLine();
-        System.out.println("wat is je email");
-        String email = scanner.nextLine();
-        System.out.println("Je nieuwe wachtwoord");
-        String nieuwWachtwoord = scanner.nextLine();
-        System.out.println("Herhaal het wachtwoord");
-        String nieuwWachtwoord2 = scanner.nextLine();
+        public static String nieuwAccount(String username, String email, String password, String confirmPassword){
 
-        CSVReader reader = new CSVReader("data/accounts.csv");
-        Map<String, String[]> accounts = reader.readAccounts();
 
-        if (accounts.containsKey(nieuweNaam) || accounts.containsKey(email)) {
-            System.out.println("Gebruikersnaam of email bestaat al, probeer een andere.");
-            nieuwAccount();
-        } else if (!nieuwWachtwoord.equals(nieuwWachtwoord2)) {
-            System.out.println("Wachtwoorden komen niet overeen, probeer opnieuw.");
-            nieuwAccount();
-        } else {
-            csvWriter.CSVAccountadder(nieuweNaam, email, nieuwWachtwoord);
-            System.out.println("Account aangemaakt voor: " + nieuweNaam);
+            Map<String, String[]> accounts = csvReader.readAccounts();
+
+            if (accounts.containsKey(username) || accounts.containsKey(email)) {
+                return "Gebruikersnaam of email bestaat al, probeer een andere.";
+            } else if (!password.equals(confirmPassword)) {
+                return "Wachtwoorden komen niet overeen, probeer opnieuw.";
+            } else {
+                csvWriter.CSVAccountadder(username, email, password);
+                return "Account aangemaakt voor: " + username;
+            }
         }
     }
-}
+
