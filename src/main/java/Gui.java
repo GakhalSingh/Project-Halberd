@@ -265,8 +265,32 @@ public class Gui extends JFrame {
     }
 
     private void showChatsScreen() {
-        // eerst moeten we alle chats apart weten op te slaan - jin (ik werk hieraan)
+        setTitle("Over " + username);
+        JPanel contentPane = new JPanel(new BorderLayout());
+        JTextArea infoText = new JTextArea();
+        infoText.setEditable(true);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setLineWrap(true);
+        infoText.setWrapStyleWord(true);
+        infoText.setText("Hallo " + username + "\n\n"
+                + "hier heb je wat informatie over je zelf XD: \n"
+                + username + "\n"
+                + email + "\n\n"
+                + "Informatie wijzigen? ");
+
+        JScrollPane scrollPane = new JScrollPane(infoText);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
     }
+
 
     private void showProfileScreen() {
         setTitle("Over " + username);

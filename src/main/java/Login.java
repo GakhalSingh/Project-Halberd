@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 public class Login extends Account {
     private Scanner scanner;
-    private static CSVWriter csvWriter = new CSVWriter("resources\\data\\accounts.csv");
-    private static CSVReader csvReader = new CSVReader("resources\\data\\accounts.csv");
+    private static CSVWriter csvWriter = new CSVWriter("src\\main\\resources\\data\\accounts.csv");
+    private static CSVReader csvReader = new CSVReader("src\\main\\resources\\data\\accounts.csv");
 
     public Login(String userName, String email, String wachtWoord, String csvFilePath) {
         super(userName, email, wachtWoord);
