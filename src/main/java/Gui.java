@@ -12,7 +12,7 @@ import java.util.Map;
 public class Gui extends JFrame {
     private ChatBox chatBox;
     private String username;
-    private String csvContent;  // Field to store CSV content
+    private JPanel chatListPanel;
 
 
     public Gui() {
@@ -157,7 +157,7 @@ public class Gui extends JFrame {
     }
 
     private void setCsvContent(String content) {
-        this.csvContent = content;
+        // Field to store CSV content
     }
 
 
@@ -169,7 +169,7 @@ public class Gui extends JFrame {
         JTextPane chatPane = new JTextPane();
         chatPane.setContentType("text/html");
         chatPane.setEditable(false);
-        chatPane.setFont(new Font("Arial", Font.PLAIN, 14)); // beste lettertypo imo
+        chatPane.setFont(new Font("Arial", Font.PLAIN, 14));
 
         JScrollPane scrollPane = new JScrollPane(chatPane);
         contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -177,7 +177,7 @@ public class Gui extends JFrame {
         JPanel inputPanel = new JPanel(new BorderLayout());
         JTextField inputField = new JTextField();
         JButton sendButton = new JButton("Verzenden");
-        styleButton(sendButton);
+        styleButton(sendButton, new Color(52, 152, 219), Color.WHITE);
 
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -185,11 +185,9 @@ public class Gui extends JFrame {
             }
         });
 
-        inputField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    sendMessage(inputField, chatPane);
-                }
+        inputField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                sendMessage(inputField, chatPane);
             }
         });
 
@@ -197,112 +195,98 @@ public class Gui extends JFrame {
         inputPanel.add(sendButton, BorderLayout.EAST);
         contentPane.add(inputPanel, BorderLayout.SOUTH);
 
-        JPanel navbar = createNavbar();
+        JPanel navbar = createNavbar(contentPane);
         contentPane.add(navbar, BorderLayout.NORTH);
 
+        chatListPanel = new JPanel(new GridLayout(0, 1)); // Changed to GridLayout
+        chatListPanel.setVisible(false); // Initially hidden
+        contentPane.add(chatListPanel, BorderLayout.WEST);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
+        setSize(800, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
     }
 
-    private JPanel createNavbar() {
-        JPanel navbar = new JPanel(new GridLayout(1, 4));
+    private JPanel createNavbar(JPanel contentPane) {
+        JPanel navbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
         navbar.setBackground(new Color(52, 152, 219));
 
         JButton chatsButton = new JButton("Chats");
         JButton profileButton = new JButton("Profiel");
         JButton infoButton = new JButton("Info");
         JButton logoutButton = new JButton("Logout");
+        styleButton(chatsButton, new Color(41, 128, 185), Color.WHITE);
+        styleButton(profileButton, new Color(41, 128, 185), Color.WHITE);
+        styleButton(infoButton, new Color(41, 128, 185), Color.WHITE);
+        styleButton(logoutButton, Color.RED, Color.WHITE);
 
-        styleButton(chatsButton);
-        styleButton(profileButton);
-        styleButton(infoButton);
-        styleButton(logoutButton);
-        styleLogoutButton(logoutButton);
+        chatsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                toggleChatListPanel();
+            }
+        });
 
-        chatsButton.addActionListener(e -> showChatsScreen());
-        profileButton.addActionListener(e -> showProfileScreen());
-        infoButton.addActionListener(e -> showInfoScreen());
-        logoutButton.addActionListener(e -> bootWelcomeScreen());
+        profileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showProfileScreen();
+            }
+        });
+
+        infoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showInfoScreen();
+            }
+        });
+
+        logoutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                bootWelcomeScreen();
+            }
+        });
 
         navbar.add(chatsButton);
         navbar.add(profileButton);
         navbar.add(infoButton);
         navbar.add(logoutButton);
 
-
         return navbar;
     }
 
-    private void styleButton(JButton button) {
-        button.setFocusPainted(false);
-        button.setBackground(new Color(52, 152, 219));
-        button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    private void toggleChatListPanel() {
+        chatListPanel.setVisible(!chatListPanel.isVisible());
+        if (chatListPanel.isVisible()) {
+            populateChatListPanel();
+        }
     }
 
-    private void styleLogoutButton(JButton button) {
-        button.setBackground(new Color(231, 76, 60));
+    private void populateChatListPanel() {
+        chatListPanel.removeAll();
+        for (int i = 1; i <= 5; i++) {
+            JButton chatButton = new JButton("Chat " + i);
+            styleButton(chatButton, new Color(52, 152, 219), Color.WHITE);
+            chatButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    // Logic to switch to the selected chat
+                }
+            });
+            chatListPanel.add(chatButton);
+        }
+        chatListPanel.revalidate();
+        chatListPanel.repaint();
     }
-
-    private void showChatsScreen() {
-        // eerst moeten we alle chats apart weten op te slaan - jin (ik werk hieraan)
-    }
-
-    private void showProfileScreen() {
-        // we moeten bij de gebruiker classe nog de optie email toevoegen
-    }
-
-    private void showInfoScreen() {
-        setTitle("Over A.I.S.H.A.");
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.setBackground(Color.WHITE);
-
-        JTextArea infoText = new JTextArea();
-        infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
-        infoText.setLineWrap(true);
-        infoText.setWrapStyleWord(true);
-        infoText.setText("A.I.S.H.A. (AI Study Help Assistant) is een virtuele assistent ontworpen om studenten te helpen bij hun studie. "
-                + "Deze chatbot kan vragen beantwoorden, uitleg geven over verschillende onderwerpen en interactief leren stimuleren.\n\n"
-                + "Ontwikkeld door:\n"
-                + "- [Jin]\n"
-                + "- (Li)\n"
-                + "- |Joris|)\n"
-                + "- {Brian}\n");
-
-        JScrollPane scrollPane = new JScrollPane(infoText);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        JPanel navbar = createNavbar();
-        contentPane.add(navbar, BorderLayout.NORTH);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setContentPane(contentPane);
-        setVisible(true);
-    }
-
 
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
-            String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
-            appendToChat(chatPane, usernameFormatted + message + "<br>");
-
+            appendToChat(chatPane, "<b><font face=\"Arial\">" + username + ":</font></b> " + message + "<br>");
             String response = chatBox.generateResponse(message);
-            String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
-            appendToChat(chatPane, responseFormatted + response + "<br>");
-
+            appendToChat(chatPane, "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> " + response + "<br>");
             inputField.setText("");
-            // SoundPlayer.playSound("src/resources/mp3/msn-sound_1.wav"); // werkt niet
+            // SoundPlayer.playSound("src/resources/mp3/msn-sound_1.wav"); // Geluid afspelen, indien gewenst
         }
     }
-
 
     private void appendToChat(JTextPane chatPane, String message) {
         HTMLDocument doc = (HTMLDocument) chatPane.getDocument();
@@ -315,7 +299,29 @@ public class Gui extends JFrame {
         }
     }
 
+    private void showProfileScreen() {
+        // Pagina waarop je je gebruikersnaam kan wijzigen
+        JOptionPane.showMessageDialog(this, "Profiel pagina (in ontwikkeling)");
+    }
+
+    private void showInfoScreen() {
+        // Pagina waarop informatie over de chatbot staat
+        JOptionPane.showMessageDialog(this, "AI Study Help Assistant (A.I.S.H.A.)\nOntwikkeld door [jouw naam]\nMeer informatie volgt.");
+    }
+
+    private void styleButton(JButton button, Color background, Color foreground) {
+        button.setBackground(background);
+        button.setForeground(foreground);
+        button.setFocusPainted(false);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new Gui().bootWelcomeScreen();
+            }
+        });
     }
 }
