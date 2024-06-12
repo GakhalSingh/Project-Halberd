@@ -16,7 +16,6 @@ public class Gui extends JFrame {
     private String csvContent;
     private JPanel chatListPanel;
 
-
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
     }
@@ -175,7 +174,6 @@ public class Gui extends JFrame {
         this.csvContent = content;
     }
 
-
     public void bootHomeScreen() {
         setTitle("Chat met A.I.S.H.A.");
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -216,8 +214,9 @@ public class Gui extends JFrame {
         contentPane.add(navbar, BorderLayout.NORTH);
 
         chatListPanel = new JPanel(new GridLayout(0, 1)); // Changed to GridLayout
-        chatListPanel.setVisible(false); // Initially hidden
-        contentPane.add(chatListPanel, BorderLayout.WEST);
+        contentPane.add(chatListPanel, BorderLayout.WEST); // Always visible
+
+        populateChatListPanel(); // Populate chat list panel initially
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
@@ -240,7 +239,7 @@ public class Gui extends JFrame {
         styleButton(infoButton);
         styleLogoutButton(logoutButton);
 
-        chatsButton.addActionListener(e -> toggleChatListPanel());
+        chatsButton.addActionListener(e -> bootHomeScreen()); // Switch to chat page
         profileButton.addActionListener(e -> showProfileScreen());
         infoButton.addActionListener(e -> showInfoScreen());
         logoutButton.addActionListener(e -> bootWelcomeScreen());
@@ -253,13 +252,6 @@ public class Gui extends JFrame {
         return navbar;
     }
 
-    private void toggleChatListPanel() {
-        chatListPanel.setVisible(!chatListPanel.isVisible());
-        if (chatListPanel.isVisible()) {
-            populateChatListPanel();
-        }
-    }
-
     private void populateChatListPanel() {
         chatListPanel.removeAll();
         for (int i = 1; i <= 5; i++) {
@@ -267,7 +259,7 @@ public class Gui extends JFrame {
             styleButton(chatButton);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    // Logic to switch to the selected chat
+                    bootHomeScreen(); // Switch to chat page
                 }
             });
             chatListPanel.add(chatButton);
