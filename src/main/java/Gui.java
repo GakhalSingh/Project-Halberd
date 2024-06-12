@@ -14,6 +14,8 @@ public class Gui extends JFrame {
     private String username;
     private String email;
     private String csvContent;
+    private JPanel chatListPanel;
+
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
@@ -123,7 +125,7 @@ public class Gui extends JFrame {
         gbc.weightx = 0.5;
         mainPanel.add(rightPanel, gbc);
 
-        contentPane.add(mainPanel, BorderLayout.CENTER);
+        add(mainPanel);
 
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -137,6 +139,7 @@ public class Gui extends JFrame {
                 }
             }
         });
+
         JButton nieuwAccountButton = new JButton("Nieuw account");
         nieuwAccountButton.setBackground(new Color(52, 152, 219));
         nieuwAccountButton.setForeground(Color.BLACK);
@@ -171,6 +174,7 @@ public class Gui extends JFrame {
     private void setCsvContent(String content) {
         this.csvContent = content;
     }
+
 
     public void bootHomeScreen() {
         setTitle("Chat met A.I.S.H.A.");
@@ -211,6 +215,10 @@ public class Gui extends JFrame {
         JPanel navbar = createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
+        chatListPanel = new JPanel(new GridLayout(0, 1)); // Changed to GridLayout
+        chatListPanel.setVisible(false); // Initially hidden
+        contentPane.add(chatListPanel, BorderLayout.WEST);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setLocationRelativeTo(null);
@@ -232,7 +240,7 @@ public class Gui extends JFrame {
         styleButton(infoButton);
         styleLogoutButton(logoutButton);
 
-        chatsButton.addActionListener(e -> showChatsScreen());
+        chatsButton.addActionListener(e -> toggleChatListPanel());
         profileButton.addActionListener(e -> showProfileScreen());
         infoButton.addActionListener(e -> showInfoScreen());
         logoutButton.addActionListener(e -> bootWelcomeScreen());
@@ -243,6 +251,29 @@ public class Gui extends JFrame {
         navbar.add(logoutButton);
 
         return navbar;
+    }
+
+    private void toggleChatListPanel() {
+        chatListPanel.setVisible(!chatListPanel.isVisible());
+        if (chatListPanel.isVisible()) {
+            populateChatListPanel();
+        }
+    }
+
+    private void populateChatListPanel() {
+        chatListPanel.removeAll();
+        for (int i = 1; i <= 5; i++) {
+            JButton chatButton = new JButton("Chat " + i);
+            styleButton(chatButton);
+            chatButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    // Logic to switch to the selected chat
+                }
+            });
+            chatListPanel.add(chatButton);
+        }
+        chatListPanel.revalidate();
+        chatListPanel.repaint();
     }
 
     private void styleButton(JButton button) {
@@ -397,9 +428,9 @@ public class Gui extends JFrame {
         JTextField nameField = new JTextField(20);
         JLabel emailLabel = new JLabel("Email:");
         JTextField emailField = new JTextField(20);
-        JLabel passwordLabel = new JLabel("Wachtwoord:");
+        JLabel passwordLabel = new JLabel("Wachtwoord");
         JPasswordField passwordField = new JPasswordField(20);
-        JLabel confirmPasswordLabel = new JLabel("Bevestig Wachtwoord:");
+        JLabel confirmPasswordLabel = new JLabel("Bevestig wachtwoord");
         JPasswordField confirmPasswordField = new JPasswordField(20);
 
         gbc.gridx = 0;
