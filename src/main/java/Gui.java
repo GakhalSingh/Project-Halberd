@@ -169,17 +169,17 @@ public class Gui extends JFrame {
         });
 
 
-        // Taal button
+
         JButton languageButton = new JButton("Taal / Language");
         languageButton.setBackground(new Color(52, 152, 219));
-        languageButton.setForeground(Color.BLACK);
+        languageButton.setForeground(Color.WHITE);
         GridBagConstraints langGbc = new GridBagConstraints();
         langGbc.gridx = 1;
         langGbc.gridy = 0;
-        langGbc.anchor = GridBagConstraints.NORTHEAST; // 将按钮放置在右上角
-        langGbc.insets = new Insets(10, 10, 0, 10); // 设置按钮的外边距
+        langGbc.anchor = GridBagConstraints.NORTHEAST;
+        langGbc.insets = new Insets(10, 10, 0, 10);
 
-        // 添加按钮到 mainPanel 的单独约束
+
         mainPanel.add(languageButton, langGbc);
 
         languageButton.addActionListener(e -> showLanguageSelector());
@@ -191,33 +191,43 @@ public class Gui extends JFrame {
     }
 
     private void showLanguageSelector() {
-        JDialog languageDialog = new JDialog(this, bundle.getString("language.title"), true);
-        languageDialog.setLayout(new GridLayout(2, 1));
+    JDialog languageDialog = new JDialog(this, bundle.getString("language.title"), true);
+    languageDialog.setLayout(new GridLayout(4, 1));
 
-        JButton dutchButton = new JButton("Nederlands");
-        JButton englishButton = new JButton("English");
+    JButton nederlandsButton = new JButton("Nederlands");
+    JButton englishButton = new JButton("English");
+    JButton spaansButton = new JButton("Español"); // Correcte spelling
+    JButton duitsButton = new JButton("Deutsch");
 
+    nederlandsButton.addActionListener(e -> {
+        changeLanguage("nl");
+        languageDialog.dispose();
+    });
 
-        dutchButton.addActionListener(e -> {
-            changeLanguage("nl");
-            languageDialog.dispose();
-        });
+    englishButton.addActionListener(e -> {
+        changeLanguage("en");
+        languageDialog.dispose();
+    });
 
-        englishButton.addActionListener(e -> {
-            changeLanguage("en");
-            languageDialog.dispose();
-        });
+    spaansButton.addActionListener(e -> {
+        changeLanguage("es"); // Gebruik de correcte taalcode "es"
+        languageDialog.dispose();
+    });
 
+    duitsButton.addActionListener(e -> {
+        changeLanguage("de");
+        languageDialog.dispose();
+    });
 
+    languageDialog.add(nederlandsButton);
+    languageDialog.add(englishButton);
+    languageDialog.add(spaansButton);
+    languageDialog.add(duitsButton);
 
-        languageDialog.add(dutchButton);
-        languageDialog.add(englishButton);
-
-
-        languageDialog.pack();
-        languageDialog.setLocationRelativeTo(this);
-        languageDialog.setVisible(true);
-    }
+    languageDialog.pack();
+    languageDialog.setLocationRelativeTo(this);
+    languageDialog.setVisible(true);
+}
 
 
     private boolean authenticate(String usernameOrEmail, String password) {
@@ -238,10 +248,6 @@ public class Gui extends JFrame {
             }
         }
         return false;
-    }
-
-    private void setCsvContent(String content) {
-        this.csvContent = content;
     }
 
     public void bootHomeScreen() {
