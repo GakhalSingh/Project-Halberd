@@ -173,16 +173,18 @@ public class Gui extends JFrame {
         JButton languageButton = new JButton("Taal / Language");
         languageButton.setBackground(new Color(52, 152, 219));
         languageButton.setForeground(Color.BLACK);
-        rightGbc.gridx = 1;
-        rightGbc.gridy = 5;
-        rightGbc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(languageButton, rightGbc);
+        GridBagConstraints langGbc = new GridBagConstraints();
+        langGbc.gridx = 1;
+        langGbc.gridy = 0;
+        langGbc.anchor = GridBagConstraints.NORTHEAST; // 将按钮放置在右上角
+        langGbc.insets = new Insets(10, 10, 0, 10); // 设置按钮的外边距
 
-        languageButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                showLanguageSelector();
-            }
-        });
+        // 添加按钮到 mainPanel 的单独约束
+        mainPanel.add(languageButton, langGbc);
+
+        languageButton.addActionListener(e -> showLanguageSelector());
+
+        contentPane.add(mainPanel, BorderLayout.CENTER);
 
         revalidate();
         repaint();
