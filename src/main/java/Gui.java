@@ -388,6 +388,7 @@ public class Gui extends JFrame {
                 writer.write(String.join(",", accountInfo));
                 writer.newLine();
             }
+            writer.flush();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
