@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.awt.event.*;
 import java.io.*;
@@ -22,10 +23,12 @@ public class Gui extends JFrame {
     private String csvContent;
     private JPanel chatListPanel;
     private CSVWriter csvWriter;
+    private CSVReader csvReader;
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
+        csvReader = new CSVReader("src/main/resources/data/chat's.csv");
     }
 
     public void bootWelcomeScreen() {
@@ -225,6 +228,18 @@ public class Gui extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
+
+        List<String[]> chatMessages = csvReader.readChatMessages();
+        for (String[] message : chatMessages) {
+            String sender = message[0];
+            String content = message[1];
+            String chatNumber = message[2];
+            String timestamp = message[3];
+
+            String formattedMessage = "<b><font face=\"Arial\">" + sender + ":</font></b> " +
+                    "<font face=\"Arial\">" + content + "  </font>" + "<font color=\"#808080\" size=\"-1\">" + timestamp + "</font><br>";;
+            appendToChat(chatPane, formattedMessage);
+        }
     }
 
     private JPanel createNavbar() {

@@ -1,6 +1,11 @@
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CSVReader {
     private String filePath;
@@ -30,7 +35,23 @@ public class CSVReader {
         return accounts;
     }
 
+    public List<String[]> readChatMessages() {
+        List<String[]> chatMessages = new ArrayList<>();
 
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(";");
+                if (data.length >= 4) { // Ensure it's a valid chat message format
+                    chatMessages.add(data);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return chatMessages;
+    }
 
     public void dataReader(){
         String filePath = "Project-Halberd\\src\\data.csv";
