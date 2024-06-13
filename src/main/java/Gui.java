@@ -14,7 +14,6 @@ public class Gui extends JFrame {
     private ChatBox chatBox;
     private String username;
     private String email;
-    private String csvContent;
     private JPanel chatListPanel;
 
     public Gui() {
@@ -113,7 +112,7 @@ public class Gui extends JFrame {
 
         JButton loginButton = new JButton("Inloggen");
         loginButton.setBackground(new Color(52, 152, 219));
-        loginButton.setForeground(Color.BLACK);
+        loginButton.setForeground(Color.WHITE);
         rightGbc.gridx = 1;
         rightGbc.gridy = 3;
         rightGbc.anchor = GridBagConstraints.CENTER;
@@ -127,32 +126,26 @@ public class Gui extends JFrame {
 
         add(mainPanel);
 
-        loginButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String usernameOrEmail = usernameField.getText();
-                String password = new String(passwordField.getPassword());
+        loginButton.addActionListener(e -> {
+            String usernameOrEmail = usernameField.getText();
+            String password = new String(passwordField.getPassword());
 
-                if (authenticate(usernameOrEmail, password)) {
-                    bootHomeScreen();
-                } else {
-                    JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
-                }
+            if (authenticate(usernameOrEmail, password)) {
+                bootHomeScreen();
+            } else {
+                JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
             }
         });
 
         JButton nieuwAccountButton = new JButton("Nieuw account");
         nieuwAccountButton.setBackground(new Color(52, 152, 219));
-        nieuwAccountButton.setForeground(Color.BLACK);
+        nieuwAccountButton.setForeground(Color.WHITE);
         rightGbc.gridx = 1;
         rightGbc.gridy = 4;
         rightGbc.anchor = GridBagConstraints.CENTER;
         rightPanel.add(nieuwAccountButton, rightGbc);
 
-        nieuwAccountButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                bootNewAccountScreen();
-            }
-        });
+        nieuwAccountButton.addActionListener(e -> bootNewAccountScreen());
         revalidate();
         repaint();
     }
@@ -171,7 +164,7 @@ public class Gui extends JFrame {
             if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
                 this.username = accountInfo[0];
                 this.email = accountInfo[2];
-                this.csvContent = "Username: " + this.username + "\nEmail: " + this.email;
+                String csvContent = "Username: " + this.username + "\nEmail: " + this.email;
                 return true;
             }
         }
@@ -263,7 +256,7 @@ public class Gui extends JFrame {
             styleButton(chatButton);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    bootHomeScreen(); // Switch to chat page
+                    bootHomeScreen();
                 }
             });
             chatButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, chatButton.getPreferredSize().height));
