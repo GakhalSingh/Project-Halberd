@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 public class Login extends Account {
     private Scanner scanner;
-    private static CSVWriter csvWriter = new CSVWriter("resources\\data\\accounts.csv");
-    private static CSVReader csvReader = new CSVReader("resources\\data\\accounts.csv");
+    private static CSVWriter csvWriter = new CSVWriter("src\\main\\resources\\data\\accounts.csv");
+    private static CSVReader csvReader = new CSVReader("src\\main\\resources\\data\\accounts.csv");
 
     public Login(String userName, String email, String wachtWoord, String csvFilePath) {
         super(userName, email, wachtWoord);
@@ -41,8 +41,6 @@ public class Login extends Account {
     }
 
         public static String nieuwAccount(String username, String email, String password, String confirmPassword){
-
-
             Map<String, String[]> accounts = csvReader.readAccounts();
 
             if (accounts.containsKey(username) || accounts.containsKey(email)) {

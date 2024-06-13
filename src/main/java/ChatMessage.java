@@ -1,4 +1,5 @@
 public class ChatMessage {
+    private int chatnum;
     private String sender;
     private String message;
 
