@@ -6,11 +6,8 @@ public class CSVReader {
     private String filePath;
 
     public CSVReader(String filePath) {
-
         this.filePath = filePath;
     }
-
-
 
     public Map<String, String[]> readAccounts() {
         Map<String, String[]> accounts = new HashMap<>();
@@ -23,7 +20,7 @@ public class CSVReader {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
-                if (values.length >= 3) {
+                if (values.length == 3) {
                     accounts.put(values[0].trim(), new String[]{values[0].trim(), values[1].trim(), values[2].trim()});
                 }
             }

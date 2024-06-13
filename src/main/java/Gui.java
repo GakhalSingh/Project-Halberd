@@ -281,7 +281,6 @@ public class Gui extends JFrame {
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
-
     private void showProfileScreen() {
         setTitle("Over " + username);
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -363,7 +362,7 @@ public class Gui extends JFrame {
     }
 
     private boolean updateAccountInfo(String oldUsername, String newUsername, String newPassword) {
-        CSVReader reader = new CSVReader("data\\accounts.csv");
+        CSVReader reader = new CSVReader("data/accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
         if (accounts.containsKey(oldUsername)) {
@@ -382,7 +381,7 @@ public class Gui extends JFrame {
     }
 
     private boolean saveAccountsToCSV(Map<String, String[]> accounts) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data\\accounts.csv"))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(getClass().getClassLoader().getResource("data/accounts.csv").getPath()))) {
             for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
                 String[] accountInfo = entry.getValue();
                 writer.write(String.join(",", accountInfo));
@@ -433,11 +432,31 @@ public class Gui extends JFrame {
             String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + message + "<br>");
 
+            // Save user's message to CSV
+            try {
+                saveMessageToCsv(username, message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             String response = chatBox.generateResponse(message);
             String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
             appendToChat(chatPane, responseFormatted + response + "<br>");
 
+            // Save response to CSV
+            try {
+                saveMessageToCsv("Aisha", response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             inputField.setText("");
+        }
+    }
+
+    private void saveMessageToCsv(String sender, String message) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src\\main\\resources\\data\\chat.csv", true))) {
+            writer.write(sender + ";" + message + "\n");
         }
     }
 
