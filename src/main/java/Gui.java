@@ -23,6 +23,7 @@ public class Gui extends JFrame implements Observer {
     private CSVWriter csvWriter;
     private CSVReader csvReader;
     private Login login;
+    private String currentChatNumber;
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
@@ -222,7 +223,7 @@ public class Gui extends JFrame implements Observer {
         repaint();
         setVisible(true);
 
-        String currentChatNumber = "0"; // Hiermee swirchen we tussen chats, we willen dit via buttons doen, heb hulp nodig.
+
         List<String[]> chatMessages = csvReader.readChatMessages(currentChatNumber);
         for (String[] message : chatMessages) {
             String sender = message[0];
@@ -286,10 +287,13 @@ public class Gui extends JFrame implements Observer {
         chatNames.add("Chat 3");
 
         for (String chatName : chatNames) {
+
             JButton chatButton = new JButton(chatName);
             styleButton(chatButton);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    currentChatNumber = chatName.substring(5);
+                    System.out.println(currentChatNumber);
                     bootHomeScreen();
                 }
             });
@@ -506,7 +510,7 @@ public class Gui extends JFrame implements Observer {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
             LocalDateTime timestamp = LocalDateTime.now();
-            csvWriter.logChatMessage(username, message, timestamp);
+            csvWriter.logChatMessage(username, message, currentChatNumber, timestamp);
 
             String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + "<font face=\"Arial\">" + message + "</font><br>");
@@ -515,7 +519,7 @@ public class Gui extends JFrame implements Observer {
             String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
             appendToChat(chatPane, responseFormatted + "<font face=\"Arial\">" + response + "</font><br>");
 
-            csvWriter.logChatMessage("Aisha", response, LocalDateTime.now());
+            csvWriter.logChatMessage("Aisha", response, currentChatNumber, LocalDateTime.now());
             inputField.setText("");
         }
     }
