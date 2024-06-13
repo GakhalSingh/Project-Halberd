@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
@@ -7,12 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Map;
-import java.awt.event.*;
-import java.io.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
 
 public class Gui extends JFrame {
     private ChatBox chatBox;
@@ -193,6 +189,7 @@ public class Gui extends JFrame {
         chatPane.setContentType("text/html");
         chatPane.setEditable(false);
         chatPane.setFont(new Font("Arial", Font.PLAIN, 14));
+
         JScrollPane scrollPane = new JScrollPane(chatPane);
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
@@ -213,11 +210,11 @@ public class Gui extends JFrame {
 
         chatListPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         chatListPanel.setBackground(new Color(240, 240, 240));
-        chatListPanel.setVisible(false); // Initially hidden
         contentPane.add(chatListPanel, BorderLayout.WEST);
 
         populateChatListPanel();
 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
@@ -235,7 +232,7 @@ public class Gui extends JFrame {
 
             switch (label) {
                 case "Chats":
-                    button.addActionListener(e -> toggleChatListPanel());
+                    button.addActionListener(e -> bootHomeScreen());
                     break;
                 case "Profiel":
                     button.addActionListener(e -> showProfileScreen());
@@ -263,40 +260,25 @@ public class Gui extends JFrame {
 
         for (int i = 1; i <= 5; i++) {
             JButton chatButton = new JButton("Chat " + i);
+            styleButton(chatButton);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    bootHomeScreen(); // Switch to chat page
                 }
             });
-            styleChatButton(chatButton);
             chatButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, chatButton.getPreferredSize().height));
 
             chatListPanel.add(chatButton); // Add button to the panel
         }
-
         chatListPanel.revalidate();
         chatListPanel.repaint();
-    }
-
-
-    private void styleChatButton(JButton button) {
-        button.setBackground(new Color(52, 152, 219));
-        button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-    }
-
-    private void toggleChatListPanel() {
-        chatListPanel.setVisible(!chatListPanel.isVisible());
-        if (chatListPanel.isVisible()) {
-            populateChatListPanel();
-        }
     }
 
     private void styleButton(JButton button) {
         button.setFocusPainted(false);
         button.setBackground(new Color(52, 152, 219));
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFont(new Font("Arial", Font.BOLD, 12));
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
@@ -504,9 +486,9 @@ public class Gui extends JFrame {
         JTextField nameField = new JTextField(20);
         JLabel emailLabel = new JLabel("Email:");
         JTextField emailField = new JTextField(20);
-        JLabel passwordLabel = new JLabel("Wachtwoord");
+        JLabel passwordLabel = new JLabel("Wachtwoord:");
         JPasswordField passwordField = new JPasswordField(20);
-        JLabel confirmPasswordLabel = new JLabel("Bevestig wachtwoord");
+        JLabel confirmPasswordLabel = new JLabel("Bevestig Wachtwoord:");
         JPasswordField confirmPasswordField = new JPasswordField(20);
 
         gbc.gridx = 0;
@@ -562,63 +544,6 @@ public class Gui extends JFrame {
         setVisible(true);
     }
 
-    private void showProfileScreen() {
-        setTitle("Over " + username);
-        JPanel contentPane = new JPanel(new BorderLayout());
-        JTextArea infoText = new JTextArea();
-        infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
-        infoText.setLineWrap(true);
-        infoText.setWrapStyleWord(true);
-        infoText.setText("Hallo " + username + "\n\n"
-                + "hier heb je wat informatie over je zelf XD: \n"
-                + username + "\n"
-                + email + "\n\n"
-                + "Informatie wijzigen? ");
-
-        JScrollPane scrollPane = new JScrollPane(infoText);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        JPanel navbar = createNavbar();
-        contentPane.add(navbar, BorderLayout.NORTH);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setContentPane(contentPane);
-        setVisible(true);
-    }
-
-    private void showInfoScreen() {
-        setTitle("Over A.I.S.H.A.");
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.setBackground(Color.WHITE);
-
-        JTextArea infoText = new JTextArea();
-        infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
-        infoText.setLineWrap(true);
-        infoText.setWrapStyleWord(true);
-        infoText.setText("A.I.S.H.A. (AI Study Help Assistant) is een virtuele assistent ontworpen om studenten te helpen bij hun studie. "
-                + "Deze chatbot kan vragen beantwoorden, uitleg geven over verschillende onderwerpen en interactief leren stimuleren.\n\n"
-                + "Ontwikkeld door:\n"
-                + "- [Jin]\n"
-                + "- (Li)\n"
-                + "- |Joris|)\n"
-                + "- {Brian}\n");
-
-        JScrollPane scrollPane = new JScrollPane(infoText);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        JPanel navbar = createNavbar();
-        contentPane.add(navbar, BorderLayout.NORTH);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setContentPane(contentPane);
-        setVisible(true);
-    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
