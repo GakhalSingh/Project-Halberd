@@ -30,6 +30,7 @@ public class Gui extends JFrame {
         chatBox = new ChatBox(new ArrayList<>());
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
         csvReader = new CSVReader("src/main/resources/data/chat's.csv");
+
     }
 
     public void bootWelcomeScreen() {
@@ -230,7 +231,8 @@ public class Gui extends JFrame {
         setContentPane(contentPane);
         setVisible(true);
 
-        List<String[]> chatMessages = csvReader.readChatMessages();
+        String currentChatNumber = "0"; // Hiermee swirchen we tussen chats, we willen dit via buttons doen, heb hulp nodig.
+        List<String[]> chatMessages = csvReader.readChatMessages(currentChatNumber);
         for (String[] message : chatMessages) {
             String sender = message[0];
             String content = message[1];
@@ -286,10 +288,18 @@ public class Gui extends JFrame {
         chatListPanel.removeAll();
         chatListPanel.setLayout(new BoxLayout(chatListPanel, BoxLayout.Y_AXIS));
 
-        for (int i = 1; i <= 5; i++) {
-            JButton chatButton = new JButton("Chat " + i);
+        // Simulated chat list; replace with actual logic to fetch user-specific chats
+        List<String> chatNames = new ArrayList<>();
+        chatNames.add("Chat 1");
+        chatNames.add("Chat 2");
+        chatNames.add("Chat 3");
+
+        for (String chatName : chatNames) {
+            JButton chatButton = new JButton(chatName);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    String chatIdentifier = chatName;  // Adjust this to get the chat identifier
+                    displayChatHistory(chatIdentifier);  // Method to display chat history
                 }
             });
             styleChatButton(chatButton);
@@ -300,6 +310,34 @@ public class Gui extends JFrame {
 
         chatListPanel.revalidate();
         chatListPanel.repaint();
+    }
+
+    private void displayChatHistory(String chatIdentifier) {
+        JTextPane chatPane = new JTextPane();
+        chatPane.setContentType("text/html");
+        chatPane.setEditable(false);
+        chatPane.setFont(new Font("Arial", Font.PLAIN, 14));
+        JScrollPane scrollPane = new JScrollPane(chatPane);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+        // Read chat history based on chatIdentifier from CSV
+        List<String[]> chatMessages = csvReader.readChatMessages(chatIdentifier);
+
+        for (String[] message : chatMessages) {
+            String sender = message[0];
+            String content = message[1];
+            String timestamp = message[3];
+
+            LocalDateTime dateTime = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String formattedTimestamp = dateTime.format(DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"));
+
+            String nameColor = sender.equals("Aisha") ? "#0080FF" : "black";
+            String formattedMessage = "<b><font face=\"Arial\" color=\"" + nameColor + "\">" + sender + ":</font></b> " +
+                    "<font face=\"Arial\">" + content + "  </font>" +
+                    "<font color=\"#808080\" size=\"-2\">" + formattedTimestamp + "</font><br>";
+
+            appendToChat(chatPane, formattedMessage);
+        }
     }
 
 

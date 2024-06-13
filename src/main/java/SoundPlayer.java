@@ -1,7 +1,7 @@
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
-
+// dit kunnen voor observer pattern gebruiken
 public class SoundPlayer {
     public static void playSound(String filePath) {
         try {
