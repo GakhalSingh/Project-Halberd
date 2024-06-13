@@ -425,7 +425,6 @@ public class Gui extends JFrame {
         setContentPane(contentPane);
         setVisible(true);
     }
-
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
