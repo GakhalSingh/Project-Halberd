@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -236,8 +237,14 @@ public class Gui extends JFrame {
             String chatNumber = message[2];
             String timestamp = message[3];
 
-            String formattedMessage = "<b><font face=\"Arial\">" + sender + ":</font></b> " +
-                    "<font face=\"Arial\">" + content + "  </font>" + "<font color=\"#808080\" size=\"-1\">" + timestamp + "</font><br>";;
+            LocalDateTime dateTime = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String formattedTimestamp = dateTime.format(DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"));
+
+            String nameColor = sender.equals("Aisha") ? "#0080FF" : "black";
+            String formattedMessage = "<b><font face=\"Arial\" color=\"" + nameColor + "\">" + sender + ":</font></b> " +
+                    "<font face=\"Arial\">" + content + "  </font>" +
+                    "<font color=\"#808080\" size=\"-2\">" + formattedTimestamp + "</font><br>";
+
             appendToChat(chatPane, formattedMessage);
         }
     }
@@ -410,7 +417,8 @@ public class Gui extends JFrame {
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
-            csvWriter.logChatMessage(username, message, LocalDateTime.now());
+            LocalDateTime timestamp = LocalDateTime.now();
+            csvWriter.logChatMessage(username, message, timestamp);
 
             String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + "<font face=\"Arial\">" + message + "</font><br>");
@@ -419,12 +427,11 @@ public class Gui extends JFrame {
             String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
             appendToChat(chatPane, responseFormatted + "<font face=\"Arial\">" + response + "</font><br>");
 
-            // Log assistant response to CSV
             csvWriter.logChatMessage("Aisha", response, LocalDateTime.now());
-
             inputField.setText("");
         }
     }
+
 
     private void saveMessageToCsv(String sender, String message) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("src\\main\\resources\\data\\chat.csv", true))) {
