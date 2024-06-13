@@ -29,7 +29,7 @@ public class ChatBox {
             while ((line = br.readLine()) != null) {
                 String[] fields = line.split(";");
                 if (fields.length == 2) {
-                    messages.add(new ChatMessage(fields[0], fields[1], fields[2]));
+                    messages.add(new ChatMessage(fields[0], fields[1]));
                 }
             }
         }

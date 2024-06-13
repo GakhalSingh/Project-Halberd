@@ -3,17 +3,9 @@ public class ChatMessage {
     private String sender;
     private String message;
 
-    public ChatMessage(String chatnum, String sender, String message) {
+    public ChatMessage(String sender, String message) {
         this.sender = sender;
         this.message = message;
-    }
-
-    public int getChatnum() {
-        return chatnum;
-    }
-
-    public void setChatnum(int chatnum) {
-        this.chatnum = chatnum;
     }
 
     public String getSender() { return sender; }
