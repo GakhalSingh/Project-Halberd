@@ -281,6 +281,9 @@ public class Gui extends JFrame {
 
     private void styleLogoutButton(JButton button) {
         button.setBackground(new Color(222, 102, 90));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
 
@@ -415,11 +418,31 @@ public class Gui extends JFrame {
             String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + message + "<br>");
 
+            // Save user's message to CSV
+            try {
+                saveMessageToCsv(username, message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             String response = chatBox.generateResponse(message);
             String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
             appendToChat(chatPane, responseFormatted + response + "<br>");
 
+            // Save response to CSV
+            try {
+                saveMessageToCsv("Aisha", response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             inputField.setText("");
+        }
+    }
+
+    private void saveMessageToCsv(String sender, String message) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/data/chat.csv", true))) {
+            writer.write(sender + ";" + message + "\n");
         }
     }
 
