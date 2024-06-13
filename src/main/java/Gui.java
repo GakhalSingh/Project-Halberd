@@ -1,5 +1,5 @@
 import javax.swing.*;
-import java.util.ResourceBundle;
+import java.util.*;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
@@ -7,13 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Observable;
+import java.util.List;
 import java.util.Observer;
 
 public class Gui extends JFrame implements Observer {
@@ -184,7 +181,6 @@ public class Gui extends JFrame implements Observer {
         repaint();
 
 
-
         JButton languageButton = new JButton("Taal / Language");
         languageButton.setBackground(new Color(52, 152, 219));
         languageButton.setForeground(Color.WHITE);
@@ -206,43 +202,43 @@ public class Gui extends JFrame implements Observer {
     }
 
     private void showLanguageSelector() {
-    JDialog languageDialog = new JDialog(this, bundle.getString("language.title"), true);
-    languageDialog.setLayout(new GridLayout(4, 1));
+        JDialog languageDialog = new JDialog(this, bundle.getString("language.title"), true);
+        languageDialog.setLayout(new GridLayout(4, 1));
 
-    JButton nederlandsButton = new JButton("Nederlands");
-    JButton englishButton = new JButton("English");
-    JButton spaansButton = new JButton("Español"); // Correcte spelling
-    JButton duitsButton = new JButton("Deutsch");
+        JButton nederlandsButton = new JButton("Nederlands");
+        JButton englishButton = new JButton("English");
+        JButton spaansButton = new JButton("Español"); // Correcte spelling
+        JButton duitsButton = new JButton("Deutsch");
 
-    nederlandsButton.addActionListener(e -> {
-        changeLanguage("nl");
-        languageDialog.dispose();
-    });
+        nederlandsButton.addActionListener(e -> {
+            changeLanguage("nl");
+            languageDialog.dispose();
+        });
 
-    englishButton.addActionListener(e -> {
-        changeLanguage("en");
-        languageDialog.dispose();
-    });
+        englishButton.addActionListener(e -> {
+            changeLanguage("en");
+            languageDialog.dispose();
+        });
 
-    spaansButton.addActionListener(e -> {
-        changeLanguage("es"); // Gebruik de correcte taalcode "es"
-        languageDialog.dispose();
-    });
+        spaansButton.addActionListener(e -> {
+            changeLanguage("es"); // Gebruik de correcte taalcode "es"
+            languageDialog.dispose();
+        });
 
-    duitsButton.addActionListener(e -> {
-        changeLanguage("de");
-        languageDialog.dispose();
-    });
+        duitsButton.addActionListener(e -> {
+            changeLanguage("de");
+            languageDialog.dispose();
+        });
 
-    languageDialog.add(nederlandsButton);
-    languageDialog.add(englishButton);
-    languageDialog.add(spaansButton);
-    languageDialog.add(duitsButton);
+        languageDialog.add(nederlandsButton);
+        languageDialog.add(englishButton);
+        languageDialog.add(spaansButton);
+        languageDialog.add(duitsButton);
 
-    languageDialog.pack();
-    languageDialog.setLocationRelativeTo(this);
-    languageDialog.setVisible(true);
-}
+        languageDialog.pack();
+        languageDialog.setLocationRelativeTo(this);
+        languageDialog.setVisible(true);
+    }
 
 
     private String getEmailByUsernameOrEmail(String usernameOrEmail) {
@@ -330,26 +326,20 @@ public class Gui extends JFrame implements Observer {
         JButton logoutButton = new JButton(bundle.getString("home.logout"));
 
 
-            switch (label) {
-                case "Chats":
-                    button.addActionListener(e -> bootHomeScreen());
-                    break;
-                case "Profiel":
-                    button.addActionListener(e -> showProfileScreen());
-                    break;
-                case "Info":
-                    button.addActionListener(e -> showInfoScreen());
-                    break;
-                case "Logout":
-                    styleLogoutButton(button);
-                    button.addActionListener(e -> bootWelcomeScreen());
-                    break;
-                default:
-                    break;
-            }
+        styleButton(chatsButton);
+        styleButton(profileButton);
+        styleButton(infoButton);
+        styleLogoutButton(logoutButton);
 
-            navbar.add(button);
-        }
+        chatsButton.addActionListener(e -> bootHomeScreen()); // Switch to chat page
+        profileButton.addActionListener(e -> showProfileScreen());
+        infoButton.addActionListener(e -> showInfoScreen());
+        logoutButton.addActionListener(e -> bootWelcomeScreen());
+
+        navbar.add(chatsButton);
+        navbar.add(profileButton);
+        navbar.add(infoButton);
+        navbar.add(logoutButton);
 
         return navbar;
     }
@@ -586,6 +576,7 @@ public class Gui extends JFrame implements Observer {
         setContentPane(contentPane);
         setVisible(true);
     }
+
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
@@ -701,6 +692,7 @@ public class Gui extends JFrame implements Observer {
         setContentPane(contentPane);
         setVisible(true);
     }
+
     @Override
     public void update(Observable o, Object arg) {
         if (o instanceof ChatBox) {
@@ -711,7 +703,9 @@ public class Gui extends JFrame implements Observer {
         }
     }
 
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
     }
+
 }
