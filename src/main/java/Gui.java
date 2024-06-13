@@ -4,7 +4,10 @@ import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -16,13 +19,19 @@ public class Gui extends JFrame implements Observer {
     private ChatBox chatBox;
     private String username;
     private String email;
+    private String csvContent;
     private JPanel chatListPanel;
+    private CSVWriter csvWriter;
+    private CSVReader csvReader;
     private Login login;
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
         chatBox.addObserver(this);
         login = new Login("data\\accounts.csv");
+        csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
+        csvReader = new CSVReader("src/main/resources/data/chat's.csv");
+
     }
 
     public void bootWelcomeScreen() {
@@ -213,6 +222,25 @@ public class Gui extends JFrame implements Observer {
         revalidate();
         repaint();
         setVisible(true);
+
+        String currentChatNumber = "0"; // Hiermee swirchen we tussen chats, we willen dit via buttons doen, heb hulp nodig.
+        List<String[]> chatMessages = csvReader.readChatMessages(currentChatNumber);
+        for (String[] message : chatMessages) {
+            String sender = message[0];
+            String content = message[1];
+            String chatNumber = message[2];
+            String timestamp = message[3];
+
+            LocalDateTime dateTime = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String formattedTimestamp = dateTime.format(DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"));
+
+            String nameColor = sender.equals("Aisha") ? "#0080FF" : "black";
+            String formattedMessage = "<b><font face=\"Arial\" color=\"" + nameColor + "\">" + sender + ":</font></b> " +
+                    "<font face=\"Arial\">" + content + "  </font>" +
+                    "<font color=\"#808080\" size=\"-2\">" + formattedTimestamp + "</font><br>";
+
+            appendToChat(chatPane, formattedMessage);
+        }
     }
 
     private JPanel createNavbar() {
@@ -252,20 +280,71 @@ public class Gui extends JFrame implements Observer {
         chatListPanel.removeAll();
         chatListPanel.setLayout(new BoxLayout(chatListPanel, BoxLayout.Y_AXIS));
 
-        for (int i = 1; i <= 5; i++) {
-            JButton chatButton = new JButton("Chat " + i);
-            styleButton(chatButton);
+        // Simulated chat list; replace with actual logic to fetch user-specific chats
+        List<String> chatNames = new ArrayList<>();
+        chatNames.add("Chat 1");
+        chatNames.add("Chat 2");
+        chatNames.add("Chat 3");
+
+        for (String chatName : chatNames) {
+            JButton chatButton = new JButton(chatName);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    bootHomeScreen();
+                    String chatIdentifier = chatName;  // Adjust this to get the chat identifier
+                    displayChatHistory(chatIdentifier);  // Method to display chat history
                 }
             });
+            styleChatButton(chatButton);
             chatButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, chatButton.getPreferredSize().height));
 
             chatListPanel.add(chatButton); // Add button to the panel
         }
         chatListPanel.revalidate();
         chatListPanel.repaint();
+    }
+
+    private void displayChatHistory(String chatIdentifier) {
+        JTextPane chatPane = new JTextPane();
+        chatPane.setContentType("text/html");
+        chatPane.setEditable(false);
+        chatPane.setFont(new Font("Arial", Font.PLAIN, 14));
+        JScrollPane scrollPane = new JScrollPane(chatPane);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+        // Read chat history based on chatIdentifier from CSV
+        List<String[]> chatMessages = csvReader.readChatMessages(chatIdentifier);
+
+        for (String[] message : chatMessages) {
+            String sender = message[0];
+            String content = message[1];
+            String timestamp = message[3];
+
+            LocalDateTime dateTime = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String formattedTimestamp = dateTime.format(DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"));
+
+            String nameColor = sender.equals("Aisha") ? "#0080FF" : "black";
+            String formattedMessage = "<b><font face=\"Arial\" color=\"" + nameColor + "\">" + sender + ":</font></b> " +
+                    "<font face=\"Arial\">" + content + "  </font>" +
+                    "<font color=\"#808080\" size=\"-2\">" + formattedTimestamp + "</font><br>";
+
+            appendToChat(chatPane, formattedMessage);
+        }
+    }
+
+
+    private void styleChatButton(JButton button) {
+        button.setBackground(new Color(52, 152, 219));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
+
+    private void toggleChatListPanel() {
+        chatListPanel.setVisible(!chatListPanel.isVisible());
+        if (chatListPanel.isVisible()) {
+            populateChatListPanel();
+        }
+
     }
 
     private void styleButton(JButton button) {
@@ -430,6 +509,9 @@ public class Gui extends JFrame implements Observer {
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
+            LocalDateTime timestamp = LocalDateTime.now();
+            csvWriter.logChatMessage(username, message, timestamp);
+
             String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + "<font face=\"Arial\">" + message + "</font><br>");
 
@@ -437,9 +519,11 @@ public class Gui extends JFrame implements Observer {
             String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
             appendToChat(chatPane, responseFormatted + "<font face=\"Arial\">" + response + "</font><br>");
 
+            csvWriter.logChatMessage("Aisha", response, LocalDateTime.now());
             inputField.setText("");
         }
     }
+
 
     private void saveMessageToCsv(String sender, String message) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("src\\main\\resources\\data\\chat.csv", true))) {

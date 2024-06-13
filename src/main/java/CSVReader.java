@@ -1,6 +1,5 @@
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CSVReader {
     private String filePath;
@@ -30,25 +29,22 @@ public class CSVReader {
         return accounts;
     }
 
-
-
-    public void dataReader(){
-        String filePath = "Project-Halberd\\src\\data.csv";
-        String line;
-        String csvSplitBy = ",";
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(csvSplitBy);
-                for (String value : values) {
-                    System.out.print(value + " ");
+    public List<String[]> readChatMessages(String chatIdentifier) {
+        List<String[]> chatMessages = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(";");
+                if (data.length >= 4 && data[2].equals(chatIdentifier)) { // Filter by chat identifier
+                    chatMessages.add(data);
                 }
-                System.out.println();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return chatMessages;
     }
+
     public String readAllContent() {
         StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
