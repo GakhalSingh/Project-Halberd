@@ -344,7 +344,68 @@ public class Gui extends JFrame implements Observer {
         }
 
     }
+    private void showProfileScreen() {
+        setTitle("Over " + username);
+        JPanel contentPane = new JPanel(new BorderLayout());
+        JTextArea infoText = new JTextArea();
+        infoText.setEditable(false);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setLineWrap(true);
+        infoText.setWrapStyleWord(true);
+        infoText.setText("Hallo " + username + "\n\n"
+                + "hier heb je wat informatie over je zelf XD: \n"
+                + username + "\n"
+                + email + "\n\n"
+                + "Informatie wijzigen? ");
 
+        JScrollPane scrollPane = new JScrollPane(infoText);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
+        JButton modifyButton = new JButton("Wijzig");
+        styleButton(modifyButton);
+        modifyButton.addActionListener(e -> showModifyDialog());
+        contentPane.add(modifyButton, BorderLayout.SOUTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
+    }
+
+    private void showInfoScreen() {
+        setTitle("Over A.I.S.H.A.");
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBackground(Color.WHITE);
+
+        JTextArea infoText = new JTextArea();
+        infoText.setEditable(false);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setLineWrap(true);
+        infoText.setWrapStyleWord(true);
+        infoText.setText("A.I.S.H.A. (AI Study Help Assistant) is een virtuele assistent ontworpen om studenten te helpen bij hun studie. "
+                + "Deze chatbot kan vragen beantwoorden, uitleg geven over verschillende onderwerpen en interactief leren stimuleren.\n\n"
+                + "Ontwikkeld door:\n"
+                + "- [Jin]\n"
+                + "- (Li)\n"
+                + "- |Joris|)\n"
+                + "- {Brian}\n");
+
+        JScrollPane scrollPane = new JScrollPane(infoText);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
+    }
     private void styleButton(JButton button) {
         button.setFocusPainted(false);
         button.setBackground(new Color(52, 152, 219));
