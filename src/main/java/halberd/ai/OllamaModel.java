@@ -18,7 +18,7 @@ public class OllamaModel implements AI {
         ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);
         this.assistant = AiServices.builder(Assistant.class)
                 .chatLanguageModel(OllamaChatModel.builder()
-                        .baseUrl("http://localhost:11434")
+                        .baseUrl("http://4.182.211.134:11434")
                         .modelName("llama3")
                         .build())
                 .chatMemory(chatMemory)
