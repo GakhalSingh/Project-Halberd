@@ -3,6 +3,10 @@ import javax.swing.border.Border;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Map;
 import java.awt.event.*;
 import java.io.*;
 import java.io.BufferedWriter;
@@ -178,12 +182,10 @@ public class Gui extends JFrame {
         return false;
     }
 
-    private void setCsvContent(String content) {
-        this.csvContent = content;
-    }
-
     public void bootHomeScreen() {
         setTitle("Chat met A.I.S.H.A.");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.WHITE);
 
@@ -191,7 +193,6 @@ public class Gui extends JFrame {
         chatPane.setContentType("text/html");
         chatPane.setEditable(false);
         chatPane.setFont(new Font("Arial", Font.PLAIN, 14));
-
         JScrollPane scrollPane = new JScrollPane(chatPane);
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
@@ -200,19 +201,8 @@ public class Gui extends JFrame {
         JButton sendButton = new JButton("Verzenden");
         styleButton(sendButton);
 
-        sendButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                sendMessage(inputField, chatPane);
-            }
-        });
-
-        inputField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    sendMessage(inputField, chatPane);
-                }
-            }
-        });
+        sendButton.addActionListener(e -> sendMessage(inputField, chatPane));
+        inputField.addActionListener(e -> sendMessage(inputField, chatPane));
 
         inputPanel.add(inputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
@@ -221,12 +211,13 @@ public class Gui extends JFrame {
         JPanel navbar = createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
-        chatListPanel = new JPanel(new GridLayout(0, 1)); // Changed to GridLayout
-        contentPane.add(chatListPanel, BorderLayout.WEST); // Always visible
+        chatListPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        chatListPanel.setBackground(new Color(240, 240, 240));
+        chatListPanel.setVisible(false); // Initially hidden
+        contentPane.add(chatListPanel, BorderLayout.WEST);
 
-        populateChatListPanel(); // Populate chat list panel initially
+        populateChatListPanel();
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
@@ -237,50 +228,75 @@ public class Gui extends JFrame {
         JPanel navbar = new JPanel(new GridLayout(1, 4));
         navbar.setBackground(new Color(52, 152, 219));
 
-        JButton chatsButton = new JButton("Chats");
-        JButton profileButton = new JButton("Profiel");
-        JButton infoButton = new JButton("Info");
-        JButton logoutButton = new JButton("Logout");
+        String[] buttonLabels = {"Chats", "Profiel", "Info", "Logout"};
+        for (String label : buttonLabels) {
+            JButton button = new JButton(label);
+            styleButton(button);
 
-        styleButton(chatsButton);
-        styleButton(profileButton);
-        styleButton(infoButton);
-        styleLogoutButton(logoutButton);
+            switch (label) {
+                case "Chats":
+                    button.addActionListener(e -> toggleChatListPanel());
+                    break;
+                case "Profiel":
+                    button.addActionListener(e -> showProfileScreen());
+                    break;
+                case "Info":
+                    button.addActionListener(e -> showInfoScreen());
+                    break;
+                case "Logout":
+                    styleLogoutButton(button);
+                    button.addActionListener(e -> bootWelcomeScreen());
+                    break;
+                default:
+                    break;
+            }
 
-        chatsButton.addActionListener(e -> bootHomeScreen()); // Switch to chat page
-        profileButton.addActionListener(e -> showProfileScreen());
-        infoButton.addActionListener(e -> showInfoScreen());
-        logoutButton.addActionListener(e -> bootWelcomeScreen());
-
-        navbar.add(chatsButton);
-        navbar.add(profileButton);
-        navbar.add(infoButton);
-        navbar.add(logoutButton);
+            navbar.add(button);
+        }
 
         return navbar;
     }
 
     private void populateChatListPanel() {
         chatListPanel.removeAll();
+        chatListPanel.setLayout(new BoxLayout(chatListPanel, BoxLayout.Y_AXIS));
+
         for (int i = 1; i <= 5; i++) {
             JButton chatButton = new JButton("Chat " + i);
-            styleButton(chatButton);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    bootHomeScreen(); // Switch to chat page
                 }
             });
-            chatListPanel.add(chatButton);
+            styleChatButton(chatButton);
+            chatButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, chatButton.getPreferredSize().height));
+
+            chatListPanel.add(chatButton); // Add button to the panel
         }
+
         chatListPanel.revalidate();
         chatListPanel.repaint();
+    }
+
+
+    private void styleChatButton(JButton button) {
+        button.setBackground(new Color(52, 152, 219));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
+
+    private void toggleChatListPanel() {
+        chatListPanel.setVisible(!chatListPanel.isVisible());
+        if (chatListPanel.isVisible()) {
+            populateChatListPanel();
+        }
     }
 
     private void styleButton(JButton button) {
         button.setFocusPainted(false);
         button.setBackground(new Color(52, 152, 219));
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setFont(new Font("Arial", Font.BOLD, 14));
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
@@ -439,25 +455,11 @@ public class Gui extends JFrame {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
             String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
-            appendToChat(chatPane, usernameFormatted + message + "<br>");
-
-            // Save user's message to CSV
-            try {
-                saveMessageToCsv(username, message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            appendToChat(chatPane, usernameFormatted + "<font face=\"Arial\">" + message + "</font><br>");
 
             String response = chatBox.generateResponse(message);
             String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
-            appendToChat(chatPane, responseFormatted + response + "<br>");
-
-            // Save response to CSV
-            try {
-                saveMessageToCsv("Aisha", response);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            appendToChat(chatPane, responseFormatted + "<font face=\"Arial\">" + response + "</font><br>");
 
             inputField.setText("");
         }
@@ -502,9 +504,9 @@ public class Gui extends JFrame {
         JTextField nameField = new JTextField(20);
         JLabel emailLabel = new JLabel("Email:");
         JTextField emailField = new JTextField(20);
-        JLabel passwordLabel = new JLabel("Wachtwoord:");
+        JLabel passwordLabel = new JLabel("Wachtwoord");
         JPasswordField passwordField = new JPasswordField(20);
-        JLabel confirmPasswordLabel = new JLabel("Bevestig Wachtwoord:");
+        JLabel confirmPasswordLabel = new JLabel("Bevestig wachtwoord");
         JPasswordField confirmPasswordField = new JPasswordField(20);
 
         gbc.gridx = 0;
@@ -560,6 +562,63 @@ public class Gui extends JFrame {
         setVisible(true);
     }
 
+    private void showProfileScreen() {
+        setTitle("Over " + username);
+        JPanel contentPane = new JPanel(new BorderLayout());
+        JTextArea infoText = new JTextArea();
+        infoText.setEditable(false);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setLineWrap(true);
+        infoText.setWrapStyleWord(true);
+        infoText.setText("Hallo " + username + "\n\n"
+                + "hier heb je wat informatie over je zelf XD: \n"
+                + username + "\n"
+                + email + "\n\n"
+                + "Informatie wijzigen? ");
+
+        JScrollPane scrollPane = new JScrollPane(infoText);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
+    }
+
+    private void showInfoScreen() {
+        setTitle("Over A.I.S.H.A.");
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBackground(Color.WHITE);
+
+        JTextArea infoText = new JTextArea();
+        infoText.setEditable(false);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setLineWrap(true);
+        infoText.setWrapStyleWord(true);
+        infoText.setText("A.I.S.H.A. (AI Study Help Assistant) is een virtuele assistent ontworpen om studenten te helpen bij hun studie. "
+                + "Deze chatbot kan vragen beantwoorden, uitleg geven over verschillende onderwerpen en interactief leren stimuleren.\n\n"
+                + "Ontwikkeld door:\n"
+                + "- [Jin]\n"
+                + "- (Li)\n"
+                + "- |Joris|)\n"
+                + "- {Brian}\n");
+
+        JScrollPane scrollPane = new JScrollPane(infoText);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
