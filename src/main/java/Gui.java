@@ -6,9 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -221,6 +219,8 @@ public class Gui extends JFrame {
 
         populateChatListPanel(); // Populate chat list panel initially
 
+        loadChat(currentChatNumber, chatPane); // Load the current chat
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setLocationRelativeTo(null);
@@ -257,20 +257,42 @@ public class Gui extends JFrame {
 
     private void populateChatListPanel() {
         chatListPanel.removeAll();
-        for (int i = 1; i <= 5; i++) {
+
+        for (int i = 1; i <= 5; i++) { // Example: Assume we have 5 chat files
+            String chatFileName = "chat" + i + ".txt";
             JButton chatButton = new JButton("Chat " + i);
             styleButton(chatButton);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    bootHomeScreen(); // Switch to chat page
+                    currentChatNumber = i;
+                    loadChat(i, chatPane);
                 }
             });
+            styleButton(chatButton);
             chatListPanel.add(chatButton);
         }
         chatListPanel.revalidate();
         chatListPanel.repaint();
     }
+    private void loadChat(int chatNumber, JTextPane chatPane) {
+        String chatFileName = "chat" + chatNumber + ".txt";
+        File chatFile = new File(chatFileName);
 
+        if (chatFile.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(chatFile))) {
+                StringBuilder chatContent = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    chatContent.append(line).append("\n");
+                }
+                chatPane.setText(chatContent.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            chatPane.setText("No chat history available.");
+        }
+    }
     private void styleButton(JButton button) {
         button.setFocusPainted(false);
         button.setBackground(new Color(52, 152, 219));
@@ -418,7 +440,6 @@ public class Gui extends JFrame {
             String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + message + "<br>");
 
-            // Save user's message to CSV
             try {
                 saveMessageToCsv(username, message);
             } catch (IOException e) {
@@ -437,23 +458,29 @@ public class Gui extends JFrame {
             }
 
             inputField.setText("");
+            HTMLEditorKit kit = (HTMLEditorKit) chatPane.getEditorKit();
+            HTMLDocument doc = (HTMLDocument) chatPane.getDocument();
+            try {
+                kit.insertHTML(doc, doc.getLength(), "<b>Me:</b> " + message + "<br/>", 0, 0, null);
+                chatPane.setCaretPosition(doc.getLength());
+
+                String response = chatBox.getResponse(message);
+                kit.insertHTML(doc, doc.getLength(), "<b>AI:</b> " + response + "<br/>", 0, 0, null);
+                chatPane.setCaretPosition(doc.getLength());
+
+                saveChatToFile(chatPane.getText());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void saveMessageToCsv(String sender, String message) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/data/chat.csv", true))) {
-            writer.write(sender + ";" + message + "\n");
-        }
-    }
-
-    private void appendToChat(JTextPane chatPane, String message) {
-        HTMLDocument doc = (HTMLDocument) chatPane.getDocument();
-        HTMLEditorKit editorKit = (HTMLEditorKit) chatPane.getEditorKit();
-        try {
-            editorKit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
-            chatPane.setCaretPosition(doc.getLength());
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    private void saveChatToFile(String chatContent) {
+        String chatFileName = "chat" + currentChatNumber + ".txt";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(chatFileName))) {
+            writer.write(chatContent);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
