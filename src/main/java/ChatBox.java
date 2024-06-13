@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 
-public class ChatBox {
+public class ChatBox extends Observable {
     private List<ChatMessage> messages;
 
     private final AI model;
@@ -24,8 +25,10 @@ public class ChatBox {
         return messages;
     }
 
-    public void setMessages(List<ChatMessage> messages) {
-        this.messages = messages;
+    public void addMessage(ChatMessage message) {
+        messages.add(message);
+        setChanged();
+        notifyObservers(message);
     }
 
     public static ChatBox readFromCsvFile(String filePath) throws IOException {

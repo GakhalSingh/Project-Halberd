@@ -9,8 +9,10 @@ import java.util.Map;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
-public class Gui extends JFrame {
+public class Gui extends JFrame implements Observer {
     private ChatBox chatBox;
     private String username;
     private String email;
@@ -18,6 +20,7 @@ public class Gui extends JFrame {
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
+        chatBox.addObserver(this);
     }
 
     public void bootWelcomeScreen() {
@@ -156,7 +159,6 @@ public class Gui extends JFrame {
         // TODO Login fixen want dit kan eigenlijk echt niet
         if (usernameOrEmail.equals("xyz")) return true;
 
-
         Map<String, String[]> accounts = reader.readAccounts();
 
         for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
@@ -164,7 +166,6 @@ public class Gui extends JFrame {
             if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
                 this.username = accountInfo[0];
                 this.email = accountInfo[2];
-                String csvContent = "Username: " + this.username + "\nEmail: " + this.email;
                 return true;
             }
         }
@@ -536,7 +537,15 @@ public class Gui extends JFrame {
         setContentPane(contentPane);
         setVisible(true);
     }
-
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof ChatBox) {
+            String message = (String) arg;
+            // Handle the update (e.g., append the new message to the chat pane)
+            System.out.println("New message: " + message);
+            // Update the GUI (e.g., append the new message to the chat pane)
+        }
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
