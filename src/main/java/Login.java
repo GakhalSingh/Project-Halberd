@@ -2,55 +2,41 @@ import java.io.FileReader;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Login extends Account {
+public class Login {
     private Scanner scanner;
     private static CSVWriter csvWriter = new CSVWriter("src\\main\\resources\\data\\accounts.csv");
     private static CSVReader csvReader = new CSVReader("src\\main\\resources\\data\\accounts.csv");
 
-    public Login(String userName, String email, String wachtWoord, String csvFilePath) {
-        super(userName, email, wachtWoord);
+    public Login(String csvFilePath) {
         this.scanner = new Scanner(System.in);
         this.csvWriter = new CSVWriter(csvFilePath);
         this.csvReader = new CSVReader(csvFilePath);
     }
 
-    public void loginScreen() {
-        System.out.print("Gebruikersnaam of e-mail: ");
-        String gebruikersnaamOfEmail = scanner.nextLine();
-        System.out.print("Wachtwoord: ");
-        String wachtwoord = scanner.nextLine();
+    public boolean authenticate(String usernameOrEmail, String password) {
+        CSVReader reader = new CSVReader("data\\accounts.csv");
 
-        Account account = new Account(gebruikersnaamOfEmail, gebruikersnaamOfEmail.contains("@") ? gebruikersnaamOfEmail : null, wachtwoord);
+        Map<String, String[]> accounts = reader.readAccounts();
 
-        if (isValidUser(account)) {
-            System.out.println("Login succesvol!");
-        } else {
-            System.out.println("Sorry, uw wachtwoord/gebruikersnaam combinatie is onjuist.");
-        }
-    }
-
-    private boolean isValidUser(Account account) {
-        Map<String, String[]> accounts = csvReader.readAccounts();
-
-        // Check if the input is an email or username and validate accordingly
-        if (account.getEmail() != null) {
-            return accounts.containsKey(account.getEmail()) && accounts.get(account.getEmail()).equals(account.getWachtwoord());
-        } else {
-            return accounts.containsKey(account.getUserName()) && accounts.get(account.getUserName()).equals(account.getWachtwoord());
-        }
-    }
-
-        public static String nieuwAccount(String username, String email, String password, String confirmPassword){
-            Map<String, String[]> accounts = csvReader.readAccounts();
-
-            if (accounts.containsKey(username) || accounts.containsKey(email)) {
-                return "Gebruikersnaam of email bestaat al, probeer een andere.";
-            } else if (!password.equals(confirmPassword)) {
-                return "Wachtwoorden komen niet overeen, probeer opnieuw.";
-            } else {
-                csvWriter.CSVAccountadder(username, email, password);
-                return "Account aangemaakt voor: " + username;
+        for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
+            String[] accountInfo = entry.getValue();
+            if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
+                return true;
             }
         }
+        return false;
     }
 
+    public static String nieuwAccount(String username, String email, String password, String confirmPassword) {
+        Map<String, String[]> accounts = csvReader.readAccounts();
+
+        if (accounts.containsKey(username) || accounts.containsKey(email)) {
+            return "Gebruikersnaam of email bestaat al, probeer een andere.";
+        } else if (!password.equals(confirmPassword)) {
+            return "Wachtwoorden komen niet overeen, probeer opnieuw.";
+        } else {
+            csvWriter.CSVAccountadder(username, email, password);
+            return "Account aangemaakt voor: " + username;
+        }
+    }
+}

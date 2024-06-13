@@ -17,10 +17,12 @@ public class Gui extends JFrame implements Observer {
     private String username;
     private String email;
     private JPanel chatListPanel;
+    private Login login;
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
         chatBox.addObserver(this);
+        login = new Login("data\\accounts.csv");
     }
 
     public void bootWelcomeScreen() {
@@ -133,7 +135,9 @@ public class Gui extends JFrame implements Observer {
             String usernameOrEmail = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
-            if (authenticate(usernameOrEmail, password)) {
+            if (login.authenticate(usernameOrEmail, password)) {
+                this.username = usernameOrEmail;
+                this.email = getEmailByUsernameOrEmail(usernameOrEmail); // Set email based on the authenticated user
                 bootHomeScreen();
             } else {
                 JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
@@ -153,23 +157,16 @@ public class Gui extends JFrame implements Observer {
         repaint();
     }
 
-    private boolean authenticate(String usernameOrEmail, String password) {
-        CSVReader reader = new CSVReader("data\\accounts.csv");
-
-        // TODO Login fixen want dit kan eigenlijk echt niet
-        if (usernameOrEmail.equals("xyz")) return true;
-
+    private String getEmailByUsernameOrEmail(String usernameOrEmail) {
+        CSVReader reader = new CSVReader("src\\main\\resources\\data\\accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
-        for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
-            String[] accountInfo = entry.getValue();
-            if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
-                this.username = accountInfo[0];
-                this.email = accountInfo[2];
-                return true;
+        for (String[] accountInfo : accounts.values()) {
+            if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
+                return accountInfo[2];
             }
         }
-        return false;
+        return null;
     }
 
     public void bootHomeScreen() {
@@ -197,6 +194,7 @@ public class Gui extends JFrame implements Observer {
 
         inputPanel.add(inputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
+
         contentPane.add(inputPanel, BorderLayout.SOUTH);
 
         JPanel navbar = createNavbar();
@@ -212,6 +210,8 @@ public class Gui extends JFrame implements Observer {
         setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
+        revalidate();
+        repaint();
         setVisible(true);
     }
 
