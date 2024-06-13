@@ -1,8 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,24 +6,29 @@ public class CSVReader {
     private String filePath;
 
     public CSVReader(String filePath) {
+
         this.filePath = filePath;
     }
 
+
+
     public Map<String, String[]> readAccounts() {
         Map<String, String[]> accounts = new HashMap<>();
-        try (InputStream is = getClass().getResourceAsStream(filePath);
-             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(filePath)) {
+            if (is == null) {
+                System.err.println("File not found: " + filePath);
+                return accounts;
+            }
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
-                if (values.length == 3) {
+                if (values.length >= 3) {
                     accounts.put(values[0].trim(), new String[]{values[0].trim(), values[1].trim(), values[2].trim()});
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (NullPointerException e) {
-            System.err.println("File not found: " + filePath);
         }
         return accounts;
     }

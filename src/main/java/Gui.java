@@ -1,14 +1,11 @@
 import javax.swing.*;
-import javax.swing.text.html.HTMLDocument;
+import javax.swing.border.Border;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 public class Gui extends JFrame {
     private ChatBox chatBox;
@@ -219,8 +216,6 @@ public class Gui extends JFrame {
 
         populateChatListPanel(); // Populate chat list panel initially
 
-        loadChat(currentChatNumber, chatPane); // Load the current chat
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setLocationRelativeTo(null);
@@ -257,42 +252,20 @@ public class Gui extends JFrame {
 
     private void populateChatListPanel() {
         chatListPanel.removeAll();
-
-        for (int i = 1; i <= 5; i++) { // Example: Assume we have 5 chat files
-            String chatFileName = "chat" + i + ".txt";
+        for (int i = 1; i <= 5; i++) {
             JButton chatButton = new JButton("Chat " + i);
             styleButton(chatButton);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    currentChatNumber = i;
-                    loadChat(i, chatPane);
+                    bootHomeScreen(); // Switch to chat page
                 }
             });
-            styleButton(chatButton);
             chatListPanel.add(chatButton);
         }
         chatListPanel.revalidate();
         chatListPanel.repaint();
     }
-    private void loadChat(int chatNumber, JTextPane chatPane) {
-        String chatFileName = "chat" + chatNumber + ".txt";
-        File chatFile = new File(chatFileName);
 
-        if (chatFile.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(chatFile))) {
-                StringBuilder chatContent = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    chatContent.append(line).append("\n");
-                }
-                chatPane.setText(chatContent.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            chatPane.setText("No chat history available.");
-        }
-    }
     private void styleButton(JButton button) {
         button.setFocusPainted(false);
         button.setBackground(new Color(52, 152, 219));
@@ -329,13 +302,10 @@ public class Gui extends JFrame {
         JPanel navbar = createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
-
-
-        // wijzen button
-        JButton modifyButton = new JButton("Wijzijgen");
+        JButton modifyButton = new JButton("Wijzig");
+        styleButton(modifyButton);
         modifyButton.addActionListener(e -> showModifyDialog());
         contentPane.add(modifyButton, BorderLayout.SOUTH);
-
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
@@ -356,21 +326,40 @@ public class Gui extends JFrame {
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Wijzig gebruikersinformatie", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            String newUsername = newUsernameField.getText();
-            String newPassword = new String(newPasswordField.getPassword());
-            if (!newUsername.isEmpty() && !newPassword.isEmpty()) {
-                if (updateAccountInfo(username, newUsername, newPassword)) {
-                    username = newUsername;
-                    JOptionPane.showMessageDialog(this, "Gebruikersinformatie bijgewerkt");
-                    showProfileScreen(); // 刷新页面以显示更新后的信息
-                } else {
-                    JOptionPane.showMessageDialog(this, "Fout bij het bijwerken van de gebruikersinformatie");
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Gebruikersnaam en wachtwoord mogen niet leeg zijn");
-            }
-        }
+            String newUsername = newUsernameField.getText().trim();
+            String newPassword = new String(newPasswordField.getPassword()).trim();
 
+            if (newUsername.isEmpty() && newPassword.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Gebruikersnaam en wachtwoord mogen niet allebei leeg zijn");
+                return;
+            }
+
+            if (!newUsername.isEmpty()) {
+                if (!isUsernameAvailable(newUsername)) {
+                    JOptionPane.showMessageDialog(this, "Gebruikersnaam bestaat al, kies een andere.");
+                    return;
+                }
+                if (!updateAccountInfo(username, newUsername, newPassword.isEmpty() ? null : newPassword)) {
+                    JOptionPane.showMessageDialog(this, "Fout bij het bijwerken van de gebruikersinformatie");
+                    return;
+                }
+                username = newUsername;
+            } else {
+                if (!updateAccountInfo(username, null, newPassword)) {
+                    JOptionPane.showMessageDialog(this, "Fout bij het bijwerken");
+                    return;
+                }
+            }
+
+            JOptionPane.showMessageDialog(this, "Gebruikersinformatie bijgewerkt");
+            showProfileScreen();
+        }
+    }
+
+    private boolean isUsernameAvailable(String newUsername) {
+        CSVReader reader = new CSVReader("data/accounts.csv");
+        Map<String, String[]> accounts = reader.readAccounts();
+        return !accounts.containsKey(newUsername);
     }
 
     private boolean updateAccountInfo(String oldUsername, String newUsername, String newPassword) {
@@ -379,10 +368,14 @@ public class Gui extends JFrame {
 
         if (accounts.containsKey(oldUsername)) {
             String[] accountInfo = accounts.get(oldUsername);
-            accountInfo[0] = newUsername;
-            accountInfo[1] = newPassword;
+            if (newUsername != null && !newUsername.isEmpty()) {
+                accountInfo[0] = newUsername;
+            }
+            if (newPassword != null && !newPassword.isEmpty()) {
+                accountInfo[1] = newPassword;
+            }
             accounts.remove(oldUsername);
-            accounts.put(newUsername, accountInfo);
+            accounts.put(newUsername != null && !newUsername.isEmpty() ? newUsername : oldUsername, accountInfo);
             return saveAccountsToCSV(accounts);
         }
         return false;
@@ -440,47 +433,22 @@ public class Gui extends JFrame {
             String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + message + "<br>");
 
-            try {
-                saveMessageToCsv(username, message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
             String response = chatBox.generateResponse(message);
             String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
             appendToChat(chatPane, responseFormatted + response + "<br>");
 
-            // Save response to CSV
-            try {
-                saveMessageToCsv("Aisha", response);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
             inputField.setText("");
-            HTMLEditorKit kit = (HTMLEditorKit) chatPane.getEditorKit();
-            HTMLDocument doc = (HTMLDocument) chatPane.getDocument();
-            try {
-                kit.insertHTML(doc, doc.getLength(), "<b>Me:</b> " + message + "<br/>", 0, 0, null);
-                chatPane.setCaretPosition(doc.getLength());
-
-                String response = chatBox.getResponse(message);
-                kit.insertHTML(doc, doc.getLength(), "<b>AI:</b> " + response + "<br/>", 0, 0, null);
-                chatPane.setCaretPosition(doc.getLength());
-
-                saveChatToFile(chatPane.getText());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
-    private void saveChatToFile(String chatContent) {
-        String chatFileName = "chat" + currentChatNumber + ".txt";
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(chatFileName))) {
-            writer.write(chatContent);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void appendToChat(JTextPane chatPane, String message) {
+        HTMLDocument doc = (HTMLDocument) chatPane.getDocument();
+        HTMLEditorKit editorKit = (HTMLEditorKit) chatPane.getEditorKit();
+        try {
+            editorKit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
+            chatPane.setCaretPosition(doc.getLength());
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
