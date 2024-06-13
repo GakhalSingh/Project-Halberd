@@ -12,7 +12,7 @@ public class OnlinellamaModel implements AI {
     interface Assistant {
         String chat(String userMessage);
     }
-    private Assistant assistant;
+    private final Assistant assistant;
 
     public OnlinellamaModel(){
         ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);

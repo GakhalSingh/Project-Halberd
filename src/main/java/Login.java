@@ -3,12 +3,10 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Login {
-    private Scanner scanner;
     private static CSVWriter csvWriter = new CSVWriter("src\\main\\resources\\data\\accounts.csv");
     private static CSVReader csvReader = new CSVReader("src\\main\\resources\\data\\accounts.csv");
 
     public Login(String csvFilePath) {
-        this.scanner = new Scanner(System.in);
         this.csvWriter = new CSVWriter(csvFilePath);
         this.csvReader = new CSVReader(csvFilePath);
     }

@@ -12,7 +12,7 @@ public class OllamaModel implements AI {
     interface Assistant {
         String chat(String userMessage);
     }
-    private Assistant assistant;
+    private final Assistant assistant;
 
     public OllamaModel(){
         ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);

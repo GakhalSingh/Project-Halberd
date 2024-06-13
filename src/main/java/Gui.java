@@ -36,7 +36,7 @@ public class Gui extends JFrame implements Observer {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon icon = new ImageIcon(getClass().getResource("/img/background.jpg"));
+                ImageIcon icon = new ImageIcon(getClass().getResource("\\img\\background.jpg"));
                 Image image = icon.getImage();
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
             }
