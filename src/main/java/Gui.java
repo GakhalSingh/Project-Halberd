@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.util.ResourceBundle;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
@@ -21,12 +22,22 @@ public class Gui extends JFrame implements Observer {
     private String email;
     private String csvContent;
     private JPanel chatListPanel;
+    private String currentLanguage = "nl";
+    private ResourceBundle bundle;
+
     private CSVWriter csvWriter;
     private CSVReader csvReader;
     private Login login;
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
+        loadResourceBundle(currentLanguage);
+        bootWelcomeScreen();
+    }
+
+    private void loadResourceBundle(String languageCode) {
+        Locale locale = Locale.of(languageCode);
+        bundle = ResourceBundle.getBundle("messages", locale);
         chatBox.addObserver(this);
         login = new Login("data\\accounts.csv");
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
@@ -34,8 +45,15 @@ public class Gui extends JFrame implements Observer {
 
     }
 
+    public void changeLanguage(String languageCode) {
+        currentLanguage = languageCode;
+        loadResourceBundle(languageCode);
+        bootWelcomeScreen();
+    }
+
+
     public void bootWelcomeScreen() {
-        setTitle("AI Study Help Assistant (A.I.S.H.A.)");
+        setTitle(bundle.getString("welcome.title"));
         setSize(1000, 600);
         setMinimumSize(new Dimension(800, 600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,11 +88,11 @@ public class Gui extends JFrame implements Observer {
         leftPanel.setOpaque(true);
         leftPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-        JLabel titleLabel = new JLabel("Chat met A.I.S.H.A.");
+        JLabel titleLabel = new JLabel(bundle.getString("home.chat"));
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel descriptionLabel = new JLabel("Verbeter je leerervaring met Aisha!");
+        JLabel descriptionLabel = new JLabel(bundle.getString("info.about"));
         descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -96,14 +114,14 @@ public class Gui extends JFrame implements Observer {
         rightGbc.insets = new Insets(10, 10, 10, 10);
         rightGbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel quickStartLabel = new JLabel("Laten we beginnen!");
+        JLabel quickStartLabel = new JLabel(bundle.getString("welcome.login"));
         quickStartLabel.setFont(new Font("Arial", Font.BOLD, 20));
         rightGbc.gridx = 0;
         rightGbc.gridy = 0;
         rightGbc.gridwidth = 2;
         rightPanel.add(quickStartLabel, rightGbc);
 
-        JLabel usernameLabel = new JLabel("Gebruikersnaam/Email");
+        JLabel usernameLabel = new JLabel(bundle.getString("welcome.username"));
         rightGbc.gridx = 0;
         rightGbc.gridy = 1;
         rightGbc.gridwidth = 1;
@@ -114,7 +132,7 @@ public class Gui extends JFrame implements Observer {
         rightGbc.gridy = 1;
         rightPanel.add(usernameField, rightGbc);
 
-        JLabel passwordLabel = new JLabel("Wachtwoord");
+        JLabel passwordLabel = new JLabel(bundle.getString("welcome.password"));
         rightGbc.gridx = 0;
         rightGbc.gridy = 2;
         rightPanel.add(passwordLabel, rightGbc);
@@ -124,7 +142,7 @@ public class Gui extends JFrame implements Observer {
         rightGbc.gridy = 2;
         rightPanel.add(passwordField, rightGbc);
 
-        JButton loginButton = new JButton("Inloggen");
+        JButton loginButton = new JButton(bundle.getString("welcome.login"));
         loginButton.setBackground(new Color(52, 152, 219));
         loginButton.setForeground(Color.WHITE);
         rightGbc.gridx = 1;
@@ -153,7 +171,7 @@ public class Gui extends JFrame implements Observer {
             }
         });
 
-        JButton nieuwAccountButton = new JButton("Nieuw account");
+        JButton nieuwAccountButton = new JButton(bundle.getString("welcome.newAccount"));
         nieuwAccountButton.setBackground(new Color(52, 152, 219));
         nieuwAccountButton.setForeground(Color.WHITE);
         rightGbc.gridx = 1;
@@ -164,7 +182,68 @@ public class Gui extends JFrame implements Observer {
         nieuwAccountButton.addActionListener(e -> bootNewAccountScreen());
         revalidate();
         repaint();
+
+
+
+        JButton languageButton = new JButton("Taal / Language");
+        languageButton.setBackground(new Color(52, 152, 219));
+        languageButton.setForeground(Color.WHITE);
+        GridBagConstraints langGbc = new GridBagConstraints();
+        langGbc.gridx = 1;
+        langGbc.gridy = 0;
+        langGbc.anchor = GridBagConstraints.NORTHEAST;
+        langGbc.insets = new Insets(10, 10, 0, 10);
+
+
+        mainPanel.add(languageButton, langGbc);
+
+        languageButton.addActionListener(e -> showLanguageSelector());
+
+        contentPane.add(mainPanel, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
     }
+
+    private void showLanguageSelector() {
+    JDialog languageDialog = new JDialog(this, bundle.getString("language.title"), true);
+    languageDialog.setLayout(new GridLayout(4, 1));
+
+    JButton nederlandsButton = new JButton("Nederlands");
+    JButton englishButton = new JButton("English");
+    JButton spaansButton = new JButton("Español"); // Correcte spelling
+    JButton duitsButton = new JButton("Deutsch");
+
+    nederlandsButton.addActionListener(e -> {
+        changeLanguage("nl");
+        languageDialog.dispose();
+    });
+
+    englishButton.addActionListener(e -> {
+        changeLanguage("en");
+        languageDialog.dispose();
+    });
+
+    spaansButton.addActionListener(e -> {
+        changeLanguage("es"); // Gebruik de correcte taalcode "es"
+        languageDialog.dispose();
+    });
+
+    duitsButton.addActionListener(e -> {
+        changeLanguage("de");
+        languageDialog.dispose();
+    });
+
+    languageDialog.add(nederlandsButton);
+    languageDialog.add(englishButton);
+    languageDialog.add(spaansButton);
+    languageDialog.add(duitsButton);
+
+    languageDialog.pack();
+    languageDialog.setLocationRelativeTo(this);
+    languageDialog.setVisible(true);
+}
+
 
     private String getEmailByUsernameOrEmail(String usernameOrEmail) {
         CSVReader reader = new CSVReader("src\\main\\resources\\data\\accounts.csv");
@@ -179,9 +258,7 @@ public class Gui extends JFrame implements Observer {
     }
 
     public void bootHomeScreen() {
-        setTitle("Chat met A.I.S.H.A.");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        setTitle(bundle.getString("home.chat"));
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.WHITE);
 
@@ -195,7 +272,7 @@ public class Gui extends JFrame implements Observer {
 
         JPanel inputPanel = new JPanel(new BorderLayout());
         JTextField inputField = new JTextField();
-        JButton sendButton = new JButton("Verzenden");
+        JButton sendButton = new JButton(bundle.getString("home.send"));
         styleButton(sendButton);
 
         sendButton.addActionListener(e -> sendMessage(inputField, chatPane));
@@ -247,10 +324,11 @@ public class Gui extends JFrame implements Observer {
         JPanel navbar = new JPanel(new GridLayout(1, 4));
         navbar.setBackground(new Color(52, 152, 219));
 
-        String[] buttonLabels = {"Chats", "Profiel", "Info", "Logout"};
-        for (String label : buttonLabels) {
-            JButton button = new JButton(label);
-            styleButton(button);
+        JButton chatsButton = new JButton(bundle.getString("home.chats"));
+        JButton profileButton = new JButton(bundle.getString("home.profile"));
+        JButton infoButton = new JButton(bundle.getString("home.info"));
+        JButton logoutButton = new JButton(bundle.getString("home.logout"));
+
 
             switch (label) {
                 case "Chats":
@@ -382,7 +460,7 @@ public class Gui extends JFrame implements Observer {
         JPanel navbar = createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
-        JButton modifyButton = new JButton("Wijzig");
+        JButton modifyButton = new JButton(bundle.getString("profile.modify"));
         styleButton(modifyButton);
         modifyButton.addActionListener(e -> showModifyDialog());
         contentPane.add(modifyButton, BorderLayout.SOUTH);
@@ -399,39 +477,40 @@ public class Gui extends JFrame implements Observer {
         JPasswordField newPasswordField = new JPasswordField(20);
 
         JPanel panel = new JPanel(new GridLayout(2, 2));
-        panel.add(new JLabel("Nieuwe gebruikersnaam:"));
+        panel.add(new JLabel(bundle.getString("profile.modify") + " " + bundle.getString("welcome.username")));
         panel.add(newUsernameField);
-        panel.add(new JLabel("Nieuw wachtwoord:"));
+        panel.add(new JLabel(bundle.getString("profile.modify") + " " + bundle.getString("welcome.password")));
         panel.add(newPasswordField);
 
-        int result = JOptionPane.showConfirmDialog(this, panel, "Wijzig gebruikersinformatie", JOptionPane.OK_CANCEL_OPTION);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, bundle.getString("profile.modify"), JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             String newUsername = newUsernameField.getText().trim();
             String newPassword = new String(newPasswordField.getPassword()).trim();
 
             if (newUsername.isEmpty() && newPassword.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Gebruikersnaam en wachtwoord mogen niet allebei leeg zijn");
+                JOptionPane.showMessageDialog(this, bundle.getString("error.notempty"));
                 return;
             }
 
             if (!newUsername.isEmpty()) {
                 if (!isUsernameAvailable(newUsername)) {
-                    JOptionPane.showMessageDialog(this, "Gebruikersnaam bestaat al, kies een andere.");
+                    JOptionPane.showMessageDialog(this, bundle.getString("error.usernameexists"));
                     return;
                 }
                 if (!updateAccountInfo(username, newUsername, newPassword.isEmpty() ? null : newPassword)) {
-                    JOptionPane.showMessageDialog(this, "Fout bij het bijwerken van de gebruikersinformatie");
+                    JOptionPane.showMessageDialog(this, bundle.getString("error.update"));
                     return;
                 }
                 username = newUsername;
             } else {
                 if (!updateAccountInfo(username, null, newPassword)) {
-                    JOptionPane.showMessageDialog(this, "Fout bij het bijwerken");
+                    JOptionPane.showMessageDialog(this, bundle.getString("error.update"));
                     return;
                 }
             }
 
-            JOptionPane.showMessageDialog(this, "Gebruikersinformatie bijgewerkt");
+            JOptionPane.showMessageDialog(this, bundle.getString("success.update"));
             showProfileScreen();
         }
     }
@@ -468,6 +547,7 @@ public class Gui extends JFrame implements Observer {
                 writer.write(String.join(",", accountInfo));
                 writer.newLine();
             }
+            writer.flush();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -477,7 +557,7 @@ public class Gui extends JFrame implements Observer {
 
 
     private void showInfoScreen() {
-        setTitle("Over A.I.S.H.A.");
+        setTitle(bundle.getString("home.info"));
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.WHITE);
 
@@ -543,7 +623,7 @@ public class Gui extends JFrame implements Observer {
     }
 
     public void bootNewAccountScreen() {
-        setTitle("Nieuw account aanmaken");
+        setTitle(bundle.getString("welcome.newAccount"));
         JPanel contentPane = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -560,13 +640,13 @@ public class Gui extends JFrame implements Observer {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel nameLabel = new JLabel("Naam:");
+        JLabel nameLabel = new JLabel(bundle.getString("welcome.username"));
         JTextField nameField = new JTextField(20);
-        JLabel emailLabel = new JLabel("Email:");
+        JLabel emailLabel = new JLabel(bundle.getString("welcome.email"));
         JTextField emailField = new JTextField(20);
-        JLabel passwordLabel = new JLabel("Wachtwoord:");
+        JLabel passwordLabel = new JLabel(bundle.getString("welcome.password"));
         JPasswordField passwordField = new JPasswordField(20);
-        JLabel confirmPasswordLabel = new JLabel("Bevestig Wachtwoord:");
+        JLabel confirmPasswordLabel = new JLabel(bundle.getString("welcome.confirmPassword"));
         JPasswordField confirmPasswordField = new JPasswordField(20);
 
         gbc.gridx = 0;
@@ -593,7 +673,7 @@ public class Gui extends JFrame implements Observer {
         gbc.gridx = 1;
         formPanel.add(confirmPasswordField, gbc);
 
-        JButton createAccountButton = new JButton("Account aanmaken");
+        JButton createAccountButton = new JButton(bundle.getString("welcome.newAccount"));
         styleButton(createAccountButton);
         gbc.gridx = 1;
         gbc.gridy = 4;
@@ -610,7 +690,7 @@ public class Gui extends JFrame implements Observer {
             String result = Login.nieuwAccount(name, email, password, confirmPassword);
             JOptionPane.showMessageDialog(this, result);
 
-            if (result.equals("Account aangemaakt voor: " + name)) {
+            if (result.equals(bundle.getString("account.created") + ": " + name)) {
                 bootWelcomeScreen();
             }
         });
