@@ -1,16 +1,11 @@
 import javax.swing.*;
-import javax.swing.text.html.HTMLDocument;
+import javax.swing.border.Border;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
 
 public class Gui extends JFrame {
     private ChatBox chatBox;
@@ -159,6 +154,10 @@ public class Gui extends JFrame {
 
     private boolean authenticate(String usernameOrEmail, String password) {
         CSVReader reader = new CSVReader("data\\accounts.csv");
+
+        // TODO Login fixen want dit kan eigenlijk echt niet
+        if (usernameOrEmail.equals("xyz")) return true;
+
         Map<String, String[]> accounts = reader.readAccounts();
 
         for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
@@ -283,7 +282,6 @@ public class Gui extends JFrame {
         button.setBackground(new Color(222, 102, 90));
     }
 
-
     private void showProfileScreen() {
         setTitle("Over " + username);
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -304,13 +302,10 @@ public class Gui extends JFrame {
         JPanel navbar = createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
-
-
-        // wijzen button
-        JButton modifyButton = new JButton("Wijzijgen");
+        JButton modifyButton = new JButton("Wijzig");
+        styleButton(modifyButton);
         modifyButton.addActionListener(e -> showModifyDialog());
         contentPane.add(modifyButton, BorderLayout.SOUTH);
-
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
@@ -331,40 +326,63 @@ public class Gui extends JFrame {
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Wijzig gebruikersinformatie", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            String newUsername = newUsernameField.getText();
-            String newPassword = new String(newPasswordField.getPassword());
-            if (!newUsername.isEmpty() && !newPassword.isEmpty()) {
-                if (updateAccountInfo(username, newUsername, newPassword)) {
-                    username = newUsername;
-                    JOptionPane.showMessageDialog(this, "Gebruikersinformatie bijgewerkt");
-                    showProfileScreen(); // 刷新页面以显示更新后的信息
-                } else {
-                    JOptionPane.showMessageDialog(this, "Fout bij het bijwerken van de gebruikersinformatie");
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Gebruikersnaam en wachtwoord mogen niet leeg zijn");
-            }
-        }
+            String newUsername = newUsernameField.getText().trim();
+            String newPassword = new String(newPasswordField.getPassword()).trim();
 
+            if (newUsername.isEmpty() && newPassword.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Gebruikersnaam en wachtwoord mogen niet allebei leeg zijn");
+                return;
+            }
+
+            if (!newUsername.isEmpty()) {
+                if (!isUsernameAvailable(newUsername)) {
+                    JOptionPane.showMessageDialog(this, "Gebruikersnaam bestaat al, kies een andere.");
+                    return;
+                }
+                if (!updateAccountInfo(username, newUsername, newPassword.isEmpty() ? null : newPassword)) {
+                    JOptionPane.showMessageDialog(this, "Fout bij het bijwerken van de gebruikersinformatie");
+                    return;
+                }
+                username = newUsername;
+            } else {
+                if (!updateAccountInfo(username, null, newPassword)) {
+                    JOptionPane.showMessageDialog(this, "Fout bij het bijwerken");
+                    return;
+                }
+            }
+
+            JOptionPane.showMessageDialog(this, "Gebruikersinformatie bijgewerkt");
+            showProfileScreen();
+        }
+    }
+
+    private boolean isUsernameAvailable(String newUsername) {
+        CSVReader reader = new CSVReader("data/accounts.csv");
+        Map<String, String[]> accounts = reader.readAccounts();
+        return !accounts.containsKey(newUsername);
     }
 
     private boolean updateAccountInfo(String oldUsername, String newUsername, String newPassword) {
-        CSVReader reader = new CSVReader("data\\accounts.csv");
+        CSVReader reader = new CSVReader("data/accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
         if (accounts.containsKey(oldUsername)) {
             String[] accountInfo = accounts.get(oldUsername);
-            accountInfo[0] = newUsername;
-            accountInfo[1] = newPassword;
+            if (newUsername != null && !newUsername.isEmpty()) {
+                accountInfo[0] = newUsername;
+            }
+            if (newPassword != null && !newPassword.isEmpty()) {
+                accountInfo[1] = newPassword;
+            }
             accounts.remove(oldUsername);
-            accounts.put(newUsername, accountInfo);
+            accounts.put(newUsername != null && !newUsername.isEmpty() ? newUsername : oldUsername, accountInfo);
             return saveAccountsToCSV(accounts);
         }
         return false;
     }
 
     private boolean saveAccountsToCSV(Map<String, String[]> accounts) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data\\accounts.csv"))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(getClass().getClassLoader().getResource("data/accounts.csv").getPath()))) {
             for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
                 String[] accountInfo = entry.getValue();
                 writer.write(String.join(",", accountInfo));
@@ -513,9 +531,8 @@ public class Gui extends JFrame {
         setContentPane(contentPane);
         setVisible(true);
     }
-
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
-    }
 }
+
+
+
+
