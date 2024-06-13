@@ -27,6 +27,7 @@ public class OllamaModel implements AI {
 
     public String chat(String userMessage) {
         String response = assistant.chat(userMessage);
+
         return response;
     }
 }

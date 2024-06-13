@@ -5,6 +5,7 @@ import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.awt.event.*;
@@ -20,9 +21,11 @@ public class Gui extends JFrame {
     private String email;
     private String csvContent;
     private JPanel chatListPanel;
+    private CSVWriter csvWriter;
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
+        csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
     }
 
     public void bootWelcomeScreen() {
@@ -290,6 +293,7 @@ public class Gui extends JFrame {
         if (chatListPanel.isVisible()) {
             populateChatListPanel();
         }
+
     }
 
     private void styleButton(JButton button) {
@@ -305,38 +309,6 @@ public class Gui extends JFrame {
         button.setForeground(Color.WHITE);
         button.setFont(new Font("Arial", Font.BOLD, 12));
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-    }
-
-    private void showProfileScreen() {
-        setTitle("Over " + username);
-        JPanel contentPane = new JPanel(new BorderLayout());
-        JTextArea infoText = new JTextArea();
-        infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
-        infoText.setLineWrap(true);
-        infoText.setWrapStyleWord(true);
-        infoText.setText("Hallo " + username + "\n\n"
-                + "hier heb je wat informatie over je zelf XD: \n"
-                + username + "\n"
-                + email + "\n\n"
-                + "Informatie wijzigen? ");
-
-        JScrollPane scrollPane = new JScrollPane(infoText);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        JPanel navbar = createNavbar();
-        contentPane.add(navbar, BorderLayout.NORTH);
-
-        JButton modifyButton = new JButton("Wijzig");
-        styleButton(modifyButton);
-        modifyButton.addActionListener(e -> showModifyDialog());
-        contentPane.add(modifyButton, BorderLayout.SOUTH);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setContentPane(contentPane);
-        setVisible(true);
     }
 
     private void showModifyDialog() {
@@ -420,46 +392,20 @@ public class Gui extends JFrame {
         }
     }
 
-
-    private void showInfoScreen() {
-        setTitle("Over A.I.S.H.A.");
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.setBackground(Color.WHITE);
-
-        JTextArea infoText = new JTextArea();
-        infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
-        infoText.setLineWrap(true);
-        infoText.setWrapStyleWord(true);
-        infoText.setText("A.I.S.H.A. (AI Study Help Assistant) is een virtuele assistent ontworpen om studenten te helpen bij hun studie. "
-                + "Deze chatbot kan vragen beantwoorden, uitleg geven over verschillende onderwerpen en interactief leren stimuleren.\n\n"
-                + "Ontwikkeld door:\n"
-                + "- [Jin]\n"
-                + "- (Li)\n"
-                + "- |Joris|)\n"
-                + "- {Brian}\n");
-
-        JScrollPane scrollPane = new JScrollPane(infoText);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        JPanel navbar = createNavbar();
-        contentPane.add(navbar, BorderLayout.NORTH);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setContentPane(contentPane);
-        setVisible(true);
-    }
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
+            csvWriter.logChatMessage(username, message, LocalDateTime.now());
+
             String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + "<font face=\"Arial\">" + message + "</font><br>");
 
             String response = chatBox.generateResponse(message);
             String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
             appendToChat(chatPane, responseFormatted + "<font face=\"Arial\">" + response + "</font><br>");
+
+            // Log assistant response to CSV
+            csvWriter.logChatMessage("Aisha", response, LocalDateTime.now());
 
             inputField.setText("");
         }
