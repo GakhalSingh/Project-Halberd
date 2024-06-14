@@ -298,7 +298,7 @@ public class Gui extends JFrame implements Observer {
         repaint();
         setVisible(true);
 
-        String currentChatNumber = "0"; // Hiermee swirchen we tussen chats, we willen dit via buttons doen, heb hulp nodig.
+
         List<String[]> chatMessages = csvReader.readChatMessages(currentChatNumber);
         for (String[] message : chatMessages) {
             String sender = message[0];
@@ -710,9 +710,7 @@ public class Gui extends JFrame implements Observer {
         }
     }
 
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
     }
-
 }
