@@ -57,10 +57,10 @@ public class CSVWriter {
         }
     }
 
-    public void logChatMessage(String sender, String message, LocalDateTime timestamp) {
+    public void logChatMessage(String sender, String message, String currentChatNumber, LocalDateTime timestamp) {
         try (FileWriter writer = new FileWriter(bestandsnaam, true)) {
             String formattedTimestamp = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            writer.append(sender).append(";").append(message).append(";").append("0;").append(formattedTimestamp).append("\n");
+            writer.append(sender).append(";").append(message).append(";").append(currentChatNumber).append(";").append(formattedTimestamp).append("\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
