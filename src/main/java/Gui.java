@@ -1,26 +1,57 @@
 import javax.swing.*;
-import javax.swing.text.html.HTMLDocument;
+import java.util.*;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
-public class Gui extends JFrame {
+public class Gui extends JFrame implements Observer {
     private ChatBox chatBox;
     private String username;
+    private String email;
     private JPanel chatListPanel;
+    private String currentLanguage = "nl";
+    private ResourceBundle bundle;
+    private CSVWriter csvWriter;
+    private CSVReader csvReader;
+    private Login login;
+    private String currentChatNumber;
 
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
+        loadResourceBundle(currentLanguage);
+        csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
+        csvReader = new CSVReader("src/main/resources/data/chat's.csv");
+        login = new Login("src/main/resources/data/accounts.csv");
+        bootWelcomeScreen();
+    }
+
+    private void loadResourceBundle(String languageCode) {
+        Locale locale = new Locale(languageCode);
+        bundle = ResourceBundle.getBundle("messages", locale);
+        chatBox.addObserver(this);
+    }
+
+    public void changeLanguage(String languageCode) {
+        currentLanguage = languageCode;
+        loadResourceBundle(languageCode);
+        bootWelcomeScreen();
     }
 
     public void bootWelcomeScreen() {
-        setTitle("AI Study Help Assistant (A.I.S.H.A.)");
+        setTitle(bundle.getString("welcome.title"));
         setSize(1000, 600);
         setMinimumSize(new Dimension(800, 600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,7 +61,7 @@ public class Gui extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon icon = new ImageIcon(getClass().getResource("/img/background.jpg"));
+                ImageIcon icon = new ImageIcon(getClass().getResource("\\img\\background.jpg"));
                 Image image = icon.getImage();
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
             }
@@ -55,11 +86,11 @@ public class Gui extends JFrame {
         leftPanel.setOpaque(true);
         leftPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-        JLabel titleLabel = new JLabel("Chat met A.I.S.H.A.");
+        JLabel titleLabel = new JLabel(bundle.getString("home.chat"));
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel descriptionLabel = new JLabel("Verbeter je leerervaring met Aisha!");
+        JLabel descriptionLabel = new JLabel(bundle.getString("info.about"));
         descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -81,14 +112,14 @@ public class Gui extends JFrame {
         rightGbc.insets = new Insets(10, 10, 10, 10);
         rightGbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel quickStartLabel = new JLabel("Laten we beginnen!");
+        JLabel quickStartLabel = new JLabel(bundle.getString("welcome.login"));
         quickStartLabel.setFont(new Font("Arial", Font.BOLD, 20));
         rightGbc.gridx = 0;
         rightGbc.gridy = 0;
         rightGbc.gridwidth = 2;
         rightPanel.add(quickStartLabel, rightGbc);
 
-        JLabel usernameLabel = new JLabel("Gebruikersnaam/Email");
+        JLabel usernameLabel = new JLabel(bundle.getString("welcome.username"));
         rightGbc.gridx = 0;
         rightGbc.gridy = 1;
         rightGbc.gridwidth = 1;
@@ -99,7 +130,7 @@ public class Gui extends JFrame {
         rightGbc.gridy = 1;
         rightPanel.add(usernameField, rightGbc);
 
-        JLabel passwordLabel = new JLabel("Wachtwoord");
+        JLabel passwordLabel = new JLabel(bundle.getString("welcome.password"));
         rightGbc.gridx = 0;
         rightGbc.gridy = 2;
         rightPanel.add(passwordLabel, rightGbc);
@@ -109,9 +140,9 @@ public class Gui extends JFrame {
         rightGbc.gridy = 2;
         rightPanel.add(passwordField, rightGbc);
 
-        JButton loginButton = new JButton("Inloggen");
+        JButton loginButton = new JButton(bundle.getString("welcome.login"));
         loginButton.setBackground(new Color(52, 152, 219));
-        loginButton.setForeground(Color.BLACK);
+        loginButton.setForeground(Color.WHITE);
         rightGbc.gridx = 1;
         rightGbc.gridy = 3;
         rightGbc.anchor = GridBagConstraints.CENTER;
@@ -125,44 +156,98 @@ public class Gui extends JFrame {
 
         add(mainPanel);
 
-        loginButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String usernameOrEmail = usernameField.getText();
-                String password = new String(passwordField.getPassword());
+        loginButton.addActionListener(e -> {
+            String usernameOrEmail = usernameField.getText();
+            String password = new String(passwordField.getPassword());
 
-                if (authenticate(usernameOrEmail, password, Gui.this)) {
-                    String profileUsernameenEmail = usernameOrEmail;
-                    bootHomeScreen();
-                } else {
-                    JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
-                }
+            if (login.authenticate(usernameOrEmail, password)) {
+                this.username = usernameOrEmail;
+                this.email = getEmailByUsernameOrEmail(usernameOrEmail);
+                bootHomeScreen();
+            } else {
+                JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
             }
         });
+
+        JButton newAccountButton = new JButton(bundle.getString("welcome.newAccount"));
+        styleButton(newAccountButton);
+        rightGbc.gridx = 1;
+        rightGbc.gridy = 4;
+        rightGbc.anchor = GridBagConstraints.CENTER;
+        rightPanel.add(newAccountButton, rightGbc);
+
+        newAccountButton.addActionListener(e -> bootNewAccountScreen());
+
+        JButton languageButton = new JButton("Taal / Language");
+        languageButton.setBackground(new Color(52, 152, 219));
+        languageButton.setForeground(Color.WHITE);
+        GridBagConstraints langGbc = new GridBagConstraints();
+        langGbc.gridx = 1;
+        langGbc.gridy = 0;
+        langGbc.anchor = GridBagConstraints.NORTHEAST;
+        langGbc.insets = new Insets(10, 10, 0, 10);
+        mainPanel.add(languageButton, langGbc);
+
+        languageButton.addActionListener(e -> showLanguageSelector());
+
+        contentPane.add(mainPanel, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
     }
 
-    private static boolean authenticate(String usernameOrEmail, String password, Gui gui) {
-        CSVReader reader = new CSVReader("data\\accounts.csv");
-        Map<String, String[]> accounts = reader.readAccounts();
+    private void showLanguageSelector() {
+        JDialog languageDialog = new JDialog(this, bundle.getString("language.title"), true);
+        languageDialog.setLayout(new GridLayout(4, 1));
 
-        for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
-            String[] accountInfo = entry.getValue();
-            if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
-                String username = accountInfo[0];
-                String email = accountInfo[2];
-                gui.setCsvContent("Username: " + username + "\nEmail: " + email);
-                return true;
+        JButton nederlandsButton = new JButton("Nederlands");
+        JButton englishButton = new JButton("English");
+        JButton spaansButton = new JButton("Español");
+        JButton duitsButton = new JButton("Deutsch");
+
+        nederlandsButton.addActionListener(e -> {
+            changeLanguage("nl");
+            languageDialog.dispose();
+        });
+
+        englishButton.addActionListener(e -> {
+            changeLanguage("en");
+            languageDialog.dispose();
+        });
+
+        spaansButton.addActionListener(e -> {
+            changeLanguage("es");
+            languageDialog.dispose();
+        });
+
+        duitsButton.addActionListener(e -> {
+            changeLanguage("de");
+            languageDialog.dispose();
+        });
+
+        languageDialog.add(nederlandsButton);
+        languageDialog.add(englishButton);
+        languageDialog.add(spaansButton);
+        languageDialog.add(duitsButton);
+
+        languageDialog.pack();
+        languageDialog.setLocationRelativeTo(this);
+        languageDialog.setVisible(true);
+    }
+
+    private String getEmailByUsernameOrEmail(String usernameOrEmail) {
+        Map<String, String[]> accounts = csvReader.readAccounts();
+
+        for (String[] accountInfo : accounts.values()) {
+            if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
+                return accountInfo[2];
             }
         }
-        return false;
+        return null;
     }
-
-    private void setCsvContent(String content) {
-        // Field to store CSV content
-    }
-
 
     public void bootHomeScreen() {
-        setTitle("Chat met A.I.S.H.A.");
+        setTitle(bundle.getString("home.chat"));
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.WHITE);
 
@@ -176,75 +261,71 @@ public class Gui extends JFrame {
 
         JPanel inputPanel = new JPanel(new BorderLayout());
         JTextField inputField = new JTextField();
-        JButton sendButton = new JButton("Verzenden");
-        styleButton(sendButton, new Color(52, 152, 219), Color.WHITE);
+        JButton sendButton = new JButton(bundle.getString("home.send"));
+        styleButton(sendButton);
 
-        sendButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                sendMessage(inputField, chatPane);
-            }
-        });
-
-        inputField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                sendMessage(inputField, chatPane);
-            }
-        });
+        sendButton.addActionListener(e -> sendMessage(inputField, chatPane));
+        inputField.addActionListener(e -> sendMessage(inputField, chatPane));
 
         inputPanel.add(inputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
+
         contentPane.add(inputPanel, BorderLayout.SOUTH);
 
-        JPanel navbar = createNavbar(contentPane);
+        JPanel navbar = createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
-        chatListPanel = new JPanel(new GridLayout(0, 1)); // Changed to GridLayout
-        chatListPanel.setVisible(false); // Initially hidden
+        chatListPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        chatListPanel.setBackground(new Color(240, 240, 240));
         contentPane.add(chatListPanel, BorderLayout.WEST);
 
+        populateChatListPanel();
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
+        revalidate();
+        repaint();
         setVisible(true);
+
+        List<String[]> chatMessages = csvReader.readChatMessages(currentChatNumber);
+        for (String[] message : chatMessages) {
+            String sender = message[0];
+            String content = message[1];
+            String chatNumber = message[2];
+            String timestamp = message[3];
+
+            LocalDateTime dateTime = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String formattedTimestamp = dateTime.format(DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"));
+
+            String nameColor = sender.equals("Aisha") ? "#0080FF" : "black";
+            String formattedMessage = "<b><font face=\"Arial\" color=\"" + nameColor + "\">" + sender + ":</font></b> " +
+                    "<font face=\"Arial\">" + content + "  </font>" +
+                    "<font color=\"#808080\" size=\"-2\">" + formattedTimestamp + "</font><br>";
+
+            appendToChat(chatPane, formattedMessage);
+        }
     }
 
-    private JPanel createNavbar(JPanel contentPane) {
-        JPanel navbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    private JPanel createNavbar() {
+        JPanel navbar = new JPanel(new GridLayout(1, 4));
         navbar.setBackground(new Color(52, 152, 219));
 
-        JButton chatsButton = new JButton("Chats");
-        JButton profileButton = new JButton("Profiel");
-        JButton infoButton = new JButton("Info");
-        JButton logoutButton = new JButton("Logout");
-        styleButton(chatsButton, new Color(41, 128, 185), Color.WHITE);
-        styleButton(profileButton, new Color(41, 128, 185), Color.WHITE);
-        styleButton(infoButton, new Color(41, 128, 185), Color.WHITE);
-        styleButton(logoutButton, Color.RED, Color.WHITE);
+        JButton chatsButton = new JButton(bundle.getString("home.chats"));
+        JButton profileButton = new JButton(bundle.getString("home.profile"));
+        JButton infoButton = new JButton(bundle.getString("home.info"));
+        JButton logoutButton = new JButton(bundle.getString("home.logout"));
 
-        chatsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                toggleChatListPanel();
-            }
-        });
+        styleButton(chatsButton);
+        styleButton(profileButton);
+        styleButton(infoButton);
+        styleLogoutButton(logoutButton);
 
-        profileButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                showProfileScreen();
-            }
-        });
-
-        infoButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                showInfoScreen();
-            }
-        });
-
-        logoutButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                bootWelcomeScreen();
-            }
-        });
+        chatsButton.addActionListener(e -> bootHomeScreen());
+        profileButton.addActionListener(e -> showProfileScreen());
+        infoButton.addActionListener(e -> showInfoScreen());
+        logoutButton.addActionListener(e -> bootWelcomeScreen());
 
         navbar.add(chatsButton);
         navbar.add(profileButton);
@@ -254,37 +335,257 @@ public class Gui extends JFrame {
         return navbar;
     }
 
-    private void toggleChatListPanel() {
-        chatListPanel.setVisible(!chatListPanel.isVisible());
-        if (chatListPanel.isVisible()) {
-            populateChatListPanel();
-        }
-    }
-
     private void populateChatListPanel() {
         chatListPanel.removeAll();
-        for (int i = 1; i <= 5; i++) {
-            JButton chatButton = new JButton("Chat " + i);
-            styleButton(chatButton, new Color(52, 152, 219), Color.WHITE);
+        chatListPanel.setLayout(new BoxLayout(chatListPanel, BoxLayout.Y_AXIS));
+
+        // Simulated chat list; replace with actual logic to fetch user-specific chats
+        List<String> chatNames = new ArrayList<>();
+        chatNames.add("Chat 1");
+        chatNames.add("Chat 2");
+        chatNames.add("Chat 3");
+
+        for (String chatName : chatNames) {
+            JButton chatButton = new JButton(chatName);
+            styleButton(chatButton);
             chatButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    // Logic to switch to the selected chat
+                    currentChatNumber = chatName.substring(5);
+                    System.out.println(currentChatNumber);
+                    bootHomeScreen();
+                    String chatIdentifier = chatName;  // Adjust this to get the chat identifier
+                    displayChatHistory(chatIdentifier);  // Method to display chat history
                 }
             });
-            chatListPanel.add(chatButton);
+            styleChatButton(chatButton);
+            chatButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, chatButton.getPreferredSize().height));
+
+            chatListPanel.add(chatButton); // Add button to the panel
         }
         chatListPanel.revalidate();
         chatListPanel.repaint();
     }
 
+    private void displayChatHistory(String chatIdentifier) {
+        JTextPane chatPane = new JTextPane();
+        chatPane.setContentType("text/html");
+        chatPane.setEditable(false);
+        chatPane.setFont(new Font("Arial", Font.PLAIN, 14));
+        JScrollPane scrollPane = new JScrollPane(chatPane);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+        List<String[]> chatMessages = csvReader.readChatMessages(chatIdentifier);
+
+        for (String[] message : chatMessages) {
+            String sender = message[0];
+            String content = message[1];
+            String timestamp = message[3];
+
+            LocalDateTime dateTime = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String formattedTimestamp = dateTime.format(DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"));
+
+            String nameColor = sender.equals("Aisha") ? "#0080FF" : "black";
+            String formattedMessage = "<b><font face=\"Arial\" color=\"" + nameColor + "\">" + sender + ":</font></b> " +
+                    "<font face=\"Arial\">" + content + "  </font>" +
+                    "<font color=\"#808080\" size=\"-2\">" + formattedTimestamp + "</font><br>";
+
+            appendToChat(chatPane, formattedMessage);
+        }
+    }
+
+    private void styleChatButton(JButton button) {
+        button.setBackground(new Color(52, 152, 219));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
+
+    private void toggleChatListPanel() {
+        chatListPanel.setVisible(!chatListPanel.isVisible());
+        if (chatListPanel.isVisible()) {
+            populateChatListPanel();
+        }
+
+    }
+
+    private void styleButton(JButton button) {
+        button.setFocusPainted(false);
+        button.setBackground(new Color(52, 152, 219));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
+
+    private void styleLogoutButton(JButton button) {
+        button.setBackground(new Color(222, 102, 90));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
+
+    private void showProfileScreen() {
+        setTitle("Over " + username);
+        JPanel contentPane = new JPanel(new BorderLayout());
+        JTextArea infoText = new JTextArea();
+        infoText.setEditable(false);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setLineWrap(true);
+        infoText.setWrapStyleWord(true);
+        infoText.setText("Hallo " + username + "\n\n"
+                + "hier heb je wat informatie over je zelf XD: \n"
+                + username + "\n"
+                + email + "\n\n"
+                + "Informatie wijzigen? ");
+
+        JScrollPane scrollPane = new JScrollPane(infoText);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
+        JButton modifyButton = new JButton(bundle.getString("profile.modify"));
+        styleButton(modifyButton);
+        modifyButton.addActionListener(e -> showModifyDialog());
+        contentPane.add(modifyButton, BorderLayout.SOUTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
+    }
+
+    private void showModifyDialog() {
+    JTextField newUsernameField = new JTextField(username, 20);
+    JPasswordField newPasswordField = new JPasswordField(20);
+
+    JPanel panel = new JPanel(new GridLayout(2, 2));
+    panel.add(new JLabel(bundle.getString("profile.modify") + " " + bundle.getString("welcome.username")));
+    panel.add(newUsernameField);
+    panel.add(new JLabel(bundle.getString("profile.modify") + " " + bundle.getString("welcome.password")));
+    panel.add(newPasswordField);
+
+    int result = JOptionPane.showConfirmDialog(this, panel, bundle.getString("profile.modify"), JOptionPane.OK_CANCEL_OPTION);
+    if (result == JOptionPane.OK_OPTION) {
+        String newUsername = newUsernameField.getText().trim();
+        String newPassword = new String(newPasswordField.getPassword()).trim();
+
+        if (newUsername.isEmpty() && newPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, bundle.getString("error.notempty"));
+            return;
+        }
+
+        if (!newUsername.isEmpty()) {
+            if (!isUsernameAvailable(newUsername)) {
+                JOptionPane.showMessageDialog(this, bundle.getString("error.usernameexists"));
+                return;
+            }
+        }
+
+        if (updateAccountInfo(username, newUsername, newPassword)) {
+            username = newUsername.isEmpty() ? username : newUsername;
+            JOptionPane.showMessageDialog(this, bundle.getString("success.update"));
+            showProfileScreen();
+        } else {
+            JOptionPane.showMessageDialog(this, bundle.getString("error.update"));
+        }
+    }
+}
+
+    private boolean isUsernameAvailable(String newUsername) {
+        CSVReader reader = new CSVReader("data/accounts.csv");
+        Map<String, String[]> accounts = reader.readAccounts();
+        return !accounts.containsKey(newUsername);
+    }
+
+    private boolean updateAccountInfo(String oldUsername, String newUsername, String newPassword) {
+        CSVReader reader = new CSVReader("data/accounts.csv");
+        Map<String, String[]> accounts = reader.readAccounts();
+
+        if (accounts.containsKey(oldUsername)) {
+            String[] accountInfo = accounts.get(oldUsername);
+            if (newUsername != null && !newUsername.isEmpty()) {
+                accountInfo[0] = newUsername;
+            }
+            if (newPassword != null && !newPassword.isEmpty()) {
+                accountInfo[1] = newPassword;
+            }
+            accounts.remove(oldUsername);
+            accounts.put(newUsername != null && !newUsername.isEmpty() ? newUsername : oldUsername, accountInfo);
+            return saveAccountsToCSV(accounts);
+        }
+        return false;
+    }
+
+private boolean saveAccountsToCSV(Map<String, String[]> accounts) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/data/accounts.csv"))) {
+        for (String[] accountInfo : accounts.values()) {
+            writer.write(String.join(",", accountInfo));
+            writer.newLine();
+        }
+        writer.flush();
+        return true;
+    } catch (IOException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
+
+
+    private void showInfoScreen() {
+        setTitle(bundle.getString("home.info"));
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBackground(Color.WHITE);
+
+        JTextArea infoText = new JTextArea();
+        infoText.setEditable(false);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setLineWrap(true);
+        infoText.setWrapStyleWord(true);
+        infoText.setText("A.I.S.H.A. (AI Study Help Assistant) is een virtuele assistent ontworpen om studenten te helpen bij hun studie. "
+                + "Deze chatbot kan vragen beantwoorden, uitleg geven over verschillende onderwerpen en interactief leren stimuleren.\n\n"
+                + "Ontwikkeld door:\n"
+                + "- [Jin]\n"
+                + "- (Li)\n"
+                + "- |Joris|)\n"
+                + "- {Brian}\n");
+
+        JScrollPane scrollPane = new JScrollPane(infoText);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel navbar = createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
+    }
+
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
-            appendToChat(chatPane, "<b><font face=\"Arial\">" + username + ":</font></b> " + message + "<br>");
+            LocalDateTime timestamp = LocalDateTime.now();
+            csvWriter.logChatMessage(username, message, currentChatNumber, timestamp);
+
+            String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
+            appendToChat(chatPane, usernameFormatted + "<font face=\"Arial\">" + message + "</font><br>");
+
             String response = chatBox.generateResponse(message);
-            appendToChat(chatPane, "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> " + response + "<br>");
+            String responseFormatted = "<font color=\"#0080FF\"><b><font face=\"Arial\">Aisha:</font></b></font> ";
+            appendToChat(chatPane, responseFormatted + "<font face=\"Arial\">" + response + "</font><br>");
+
+            csvWriter.logChatMessage("Aisha", response, currentChatNumber, LocalDateTime.now());
             inputField.setText("");
-            // SoundPlayer.playSound("src/resources/mp3/msn-sound_1.wav"); // Geluid afspelen, indien gewenst
+        }
+    }
+
+
+    private void saveMessageToCsv(String sender, String message) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src\\main\\resources\\data\\chat.csv", true))) {
+            writer.write(sender + ";" + message + "\n");
         }
     }
 
@@ -299,29 +600,98 @@ public class Gui extends JFrame {
         }
     }
 
-    private void showProfileScreen() {
-        // Pagina waarop je je gebruikersnaam kan wijzigen
-        JOptionPane.showMessageDialog(this, "Profiel pagina (in ontwikkeling)");
+    public void bootNewAccountScreen() {
+    setTitle(bundle.getString("welcome.newAccount"));
+    JPanel contentPane = new JPanel(new BorderLayout()) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            ImageIcon icon = new ImageIcon(getClass().getResource("/img/background.jpg"));
+            Image image = icon.getImage();
+            g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+        }
+    };
+
+    JPanel formPanel = new JPanel(new GridBagLayout());
+    formPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+    formPanel.setOpaque(false);
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(10, 10, 10, 10);
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+
+    JLabel nameLabel = new JLabel(bundle.getString("welcome.username"));
+    JTextField nameField = new JTextField(20);
+    JLabel emailLabel = new JLabel("Email:");
+    JTextField emailField = new JTextField(20);
+    JLabel passwordLabel = new JLabel(bundle.getString("welcome.password"));
+    JPasswordField passwordField = new JPasswordField(20);
+    JLabel confirmPasswordLabel = new JLabel(bundle.getString("welcome.password"));
+    JPasswordField confirmPasswordField = new JPasswordField(20);
+
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    formPanel.add(nameLabel, gbc);
+    gbc.gridx = 1;
+    formPanel.add(nameField, gbc);
+
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    formPanel.add(emailLabel, gbc);
+    gbc.gridx = 1;
+    formPanel.add(emailField, gbc);
+
+    gbc.gridx = 0;
+    gbc.gridy = 2;
+    formPanel.add(passwordLabel, gbc);
+    gbc.gridx = 1;
+    formPanel.add(passwordField, gbc);
+
+    gbc.gridx = 0;
+    gbc.gridy = 3;
+    formPanel.add(confirmPasswordLabel, gbc);
+    gbc.gridx = 1;
+    formPanel.add(confirmPasswordField, gbc);
+
+        JButton createAccountButton = new JButton(bundle.getString("welcome.newAccount"));
+        styleButton(createAccountButton);
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.CENTER;
+        formPanel.add(createAccountButton, gbc);
+
+    contentPane.add(formPanel, BorderLayout.CENTER);
+
+        createAccountButton.addActionListener(e -> {
+            String name = nameField.getText();
+            String email = emailField.getText();
+            String password = new String(passwordField.getPassword());
+            String confirmPassword = new String(confirmPasswordField.getPassword());
+            String result = Login.nieuwAccount(name, email, password, confirmPassword);
+            JOptionPane.showMessageDialog(this, result);
+
+            if (result.equals(bundle.getString("account.created") + ": " + name)) {
+                bootWelcomeScreen();
+            }
+        });
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setContentPane(contentPane);
+        setVisible(true);
     }
 
-    private void showInfoScreen() {
-        // Pagina waarop informatie over de chatbot staat
-        JOptionPane.showMessageDialog(this, "AI Study Help Assistant (A.I.S.H.A.)\nOntwikkeld door [jouw naam]\nMeer informatie volgt.");
-    }
-
-    private void styleButton(JButton button, Color background, Color foreground) {
-        button.setBackground(background);
-        button.setForeground(foreground);
-        button.setFocusPainted(false);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof ChatBox) {
+            String message = (String) arg;
+            // Handle the update (e.g., append the new message to the chat pane)
+            System.out.println("New message: " + message);
+            // Update the GUI (e.g., append the new message to the chat pane)
+        }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new Gui().bootWelcomeScreen();
-            }
-        });
+        SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
     }
 }

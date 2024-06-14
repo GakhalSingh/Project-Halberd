@@ -1,25 +1,56 @@
+import halberd.ai.AI;
+import halberd.ai.OllamaModel;
+import halberd.ai.OnlinellamaModel;
+import halberd.sound.audio;
+
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 
-public class ChatBox {
+public class ChatBox extends Observable {
     private List<ChatMessage> messages;
+    private final AI model;
+    private final audio notificationSound;
+
+
+    private static AI aiFactory() {
+        boolean netAccess = false;
+        try {
+            Socket socket = new Socket("www.google.com", 80);
+            netAccess = socket.isConnected();
+            socket.close();
+        } catch (IOException ignore) {
+
+        }
+        if (netAccess) {
+            return new OnlinellamaModel();
+        } else {
+            return new OllamaModel();
+        }
+    }
 
     public ChatBox(List<ChatMessage> messages) {
         this.messages = messages;
+        this.model = aiFactory();
+        this.notificationSound = new audio();
     }
 
     public List<ChatMessage> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<ChatMessage> messages) {
-        this.messages = messages;
+    public void addMessage(ChatMessage message) {
+        messages.add(message);
+        setChanged();
+        notifyObservers(message);
     }
 
     public static ChatBox readFromCsvFile(String filePath) throws IOException {
@@ -37,21 +68,9 @@ public class ChatBox {
     }
 
     public String generateResponse(String message) {
-        Map<String, List<String>> data = readDataFromCSV("data\\data.csv");
-        StringBuilder chatMessage = new StringBuilder();
-        for (String keyword : data.keySet()) {
-            if (message.toLowerCase().contains(keyword.toLowerCase())) {
-                List<String> responses = data.get(keyword);
-                for (String resp : responses) {
-                    chatMessage.append(resp).append("\n");
-                }
-            }
-        }
-        if (chatMessage.length() == 0) {
-            return "Ik begreep je niet, kun je het in andere woorden vragen? 😓";
-        } else {
-            return chatMessage.toString();
-        }
+        String response = model.chat(message);
+        notificationSound.playSound();
+        return response;
     }
 
     private Map<String, List<String>> readDataFromCSV(String filePath) {
