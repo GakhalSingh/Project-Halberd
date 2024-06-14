@@ -456,46 +456,41 @@ public class Gui extends JFrame implements Observer {
     }
 
     private void showModifyDialog() {
-        JTextField newUsernameField = new JTextField(username, 20);
-        JPasswordField newPasswordField = new JPasswordField(20);
+    JTextField newUsernameField = new JTextField(username, 20);
+    JPasswordField newPasswordField = new JPasswordField(20);
 
-        JPanel panel = new JPanel(new GridLayout(2, 2));
-        panel.add(new JLabel(bundle.getString("profile.modify") + " " + bundle.getString("welcome.username")));
-        panel.add(newUsernameField);
-        panel.add(new JLabel(bundle.getString("profile.modify") + " " + bundle.getString("welcome.password")));
-        panel.add(newPasswordField);
+    JPanel panel = new JPanel(new GridLayout(2, 2));
+    panel.add(new JLabel(bundle.getString("profile.modify") + " " + bundle.getString("welcome.username")));
+    panel.add(newUsernameField);
+    panel.add(new JLabel(bundle.getString("profile.modify") + " " + bundle.getString("welcome.password")));
+    panel.add(newPasswordField);
 
-        int result = JOptionPane.showConfirmDialog(this, panel, bundle.getString("profile.modify"), JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            String newUsername = newUsernameField.getText().trim();
-            String newPassword = new String(newPasswordField.getPassword()).trim();
+    int result = JOptionPane.showConfirmDialog(this, panel, bundle.getString("profile.modify"), JOptionPane.OK_CANCEL_OPTION);
+    if (result == JOptionPane.OK_OPTION) {
+        String newUsername = newUsernameField.getText().trim();
+        String newPassword = new String(newPasswordField.getPassword()).trim();
 
-            if (newUsername.isEmpty() && newPassword.isEmpty()) {
-                JOptionPane.showMessageDialog(this, bundle.getString("error.notempty"));
+        if (newUsername.isEmpty() && newPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, bundle.getString("error.notempty"));
+            return;
+        }
+
+        if (!newUsername.isEmpty()) {
+            if (!isUsernameAvailable(newUsername)) {
+                JOptionPane.showMessageDialog(this, bundle.getString("error.usernameexists"));
                 return;
             }
+        }
 
-            if (!newUsername.isEmpty()) {
-                if (!isUsernameAvailable(newUsername)) {
-                    JOptionPane.showMessageDialog(this, bundle.getString("error.usernameexists"));
-                    return;
-                }
-                if (!updateAccountInfo(username, newUsername, newPassword.isEmpty() ? null : newPassword)) {
-                    JOptionPane.showMessageDialog(this, bundle.getString("error.update"));
-                    return;
-                }
-                username = newUsername;
-            } else {
-                if (!updateAccountInfo(username, null, newPassword)) {
-                    JOptionPane.showMessageDialog(this, bundle.getString("error.update"));
-                    return;
-                }
-            }
-
+        if (updateAccountInfo(username, newUsername, newPassword)) {
+            username = newUsername.isEmpty() ? username : newUsername;
             JOptionPane.showMessageDialog(this, bundle.getString("success.update"));
             showProfileScreen();
+        } else {
+            JOptionPane.showMessageDialog(this, bundle.getString("error.update"));
         }
     }
+}
 
     private boolean isUsernameAvailable(String newUsername) {
         CSVReader reader = new CSVReader("data/accounts.csv");
@@ -522,20 +517,20 @@ public class Gui extends JFrame implements Observer {
         return false;
     }
 
-    private boolean saveAccountsToCSV(Map<String, String[]> accounts) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(getClass().getClassLoader().getResource("data\\accounts.csv").getPath()))) {
-            for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
-                String[] accountInfo = entry.getValue();
-                writer.write(String.join(",", accountInfo));
-                writer.newLine();
-            }
-            writer.flush();
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+private boolean saveAccountsToCSV(Map<String, String[]> accounts) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/data/accounts.csv"))) {
+        for (String[] accountInfo : accounts.values()) {
+            writer.write(String.join(",", accountInfo));
+            writer.newLine();
         }
+        writer.flush();
+        return true;
+    } catch (IOException e) {
+        e.printStackTrace();
+        return false;
     }
+}
+
 
 
     private void showInfoScreen() {
