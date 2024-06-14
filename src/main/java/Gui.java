@@ -42,7 +42,6 @@ public class Gui extends JFrame implements Observer {
         login = new Login("data\\accounts.csv");
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
         csvReader = new CSVReader("src/main/resources/data/chat's.csv");
-
     }
 
     public void changeLanguage(String languageCode) {
@@ -439,32 +438,51 @@ public class Gui extends JFrame implements Observer {
     }
 
     private void showProfileScreen() {
-        setTitle("Over " + username);
+        setTitle("Profiel van " + username);
         JPanel contentPane = new JPanel(new BorderLayout());
-        JTextArea infoText = new JTextArea();
-        infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
-        infoText.setLineWrap(true);
-        infoText.setWrapStyleWord(true);
-        infoText.setText("Hallo " + username + "\n\n"
-                + "hier heb je wat informatie over je zelf XD: \n"
-                + username + "\n"
-                + email + "\n\n"
-                + "Informatie wijzigen? ");
+        contentPane.setBackground(Color.WHITE);
 
-        JScrollPane scrollPane = new JScrollPane(infoText);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
+        JPanel infoPanel = new JPanel(new BorderLayout());
+        infoPanel.setBackground(Color.WHITE);
+
+        String profileText = "<html><div style='text-align: center;'>"
+                + "<h2>Hallo " + username + "</h2>"
+                + "<p>Gevonden gegevens:</p>"
+                + "<p><b>Gebruikersnaam:</b> " + username + "</p>"
+                + "<p><b>Email:</b> " + email + "</p>"
+                + "<p>Klik op de knop onderaan het scherm om uw informatie te wijzigen.</p><hr>"
+                + "</div>"
+                + "<p>░░░░░░░█▐▓▓░████▄▄▄█▀▄▓▓▓▌█</p>"
+                + "<p>░░░░░▄█▌▀▄▓▓▄▄▄▄▀▀▀▄▓▓▓▓▓▌█</p>"
+                + "<p>░░░▄█▀▀▄▓█▓▓▓▓▓▓▓▓▓▓▓▓▀░▓▌█</p>"
+                + "<p>░░█▀▄▓▓▓███▓▓▓███▓▓▓▄░░▄▓▐█▌</p>"
+                + "<p>░█▌▓▓▓▀▀▓▓▓▓███▓▓▓▓▓▓▓▄▀▓▓▐█</p>"
+                + "<p>▐█▐██▐░▄▓▓▓▓▓▀▄░▀▓▓▓▓▓▓▓▓▌█▌</p>"
+                + "<p>█▌███▓▓▓▓▓▓▓▓▐░░▄▓▓███▓▓▓▄▀▐█</p>"
+                + "<p>█▐█▓▀░░▀▓▓▓▓▓▓▓▓▓██████▓▓▓▓▐█</p>"
+                + "<p>▌▓▄▌▀░▀░▐▀█▄▓▓██████████▓▓▓▌█▌</p>"
+                + "<p>▌▓▓▓▄▄▀▀▓▓▓▀▓▓▓▓▓▓▓▓█▓█▓█▓▓▌█▌</p>"
+                + "<p>█▐▓▓▓▓▓▓▄▄▄▓▓▓▓▓▓█▓█▓█▓█▓▓▓▐█</p>"
+                + "</html>";
+
+        JLabel infoText = new JLabel(profileText);
+        infoText.setFont(new Font("Arial", Font.PLAIN, 16));
+        infoText.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        infoPanel.add(infoText, BorderLayout.CENTER);
+        contentPane.add(infoPanel, BorderLayout.CENTER);
 
         JPanel navbar = createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JButton modifyButton = new JButton(bundle.getString("profile.modify"));
         styleButton(modifyButton);
         modifyButton.addActionListener(e -> showModifyDialog());
-        contentPane.add(modifyButton, BorderLayout.SOUTH);
+        buttonPanel.add(modifyButton);
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
@@ -553,37 +571,43 @@ public class Gui extends JFrame implements Observer {
         }
     }
 
-
     private void showInfoScreen() {
         setTitle(bundle.getString("home.info"));
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.WHITE);
 
+        JLabel titleLabel = new JLabel("A.I.S.H.A. (AI Study Help Assistant)", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        contentPane.add(titleLabel, BorderLayout.NORTH);
+
         JTextArea infoText = new JTextArea();
         infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setFont(new Font("Arial", Font.PLAIN, 16));
         infoText.setLineWrap(true);
         infoText.setWrapStyleWord(true);
         infoText.setText("A.I.S.H.A. (AI Study Help Assistant) is een virtuele assistent ontworpen om studenten te helpen bij hun studie. "
                 + "Deze chatbot kan vragen beantwoorden, uitleg geven over verschillende onderwerpen en interactief leren stimuleren.\n\n"
                 + "Ontwikkeld door:\n"
-                + "- [Jin]\n"
-                + "- (Li)\n"
-                + "- |Joris|)\n"
-                + "- {Brian}\n");
+                + "- Jin\n"
+                + "- Li\n"
+                + "- Joris\n"
+                + "- Brian\n");
+        infoText.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JScrollPane scrollPane = new JScrollPane(infoText);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
         JPanel navbar = createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
     }
+
 
     private void sendMessage(JTextField inputField, JTextPane chatPane) {
         String message = inputField.getText().trim();
