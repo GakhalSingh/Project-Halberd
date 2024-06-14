@@ -1,6 +1,8 @@
 import halberd.ai.AI;
 import halberd.ai.OllamaModel;
 import halberd.ai.OnlinellamaModel;
+import halberd.sound.audio;
+
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,8 +17,9 @@ import java.util.Observable;
 
 public class ChatBox extends Observable {
     private List<ChatMessage> messages;
-
     private final AI model;
+    private final audio notificationSound;
+
 
     private static AI aiFactory() {
         boolean netAccess = false;
@@ -37,6 +40,7 @@ public class ChatBox extends Observable {
     public ChatBox(List<ChatMessage> messages) {
         this.messages = messages;
         this.model = aiFactory();
+        this.notificationSound = new audio();
     }
 
     public List<ChatMessage> getMessages() {
@@ -64,7 +68,9 @@ public class ChatBox extends Observable {
     }
 
     public String generateResponse(String message) {
-        return model.chat(message);
+        String response = model.chat(message);
+        notificationSound.playSound();
+        return response;
     }
 
     private Map<String, List<String>> readDataFromCSV(String filePath) {

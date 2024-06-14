@@ -28,6 +28,7 @@ public class Gui extends JFrame implements Observer {
     private Login login;
     private String currentChatNumber;
 
+
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
         loadResourceBundle(currentLanguage);
