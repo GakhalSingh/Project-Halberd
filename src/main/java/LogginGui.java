@@ -11,10 +11,6 @@ public class LogginGui {
     private ResourceBundle bundle;
     private Login login;
     private Gui gui;
-    private CSVWriter csvWriter;
-    private CSVReader csvReader;
-
-    private NieuwAccountGui nieuwAccountGui;
 
     private String currentLanguage = "nl";
 
@@ -25,7 +21,6 @@ public class LogginGui {
         this.login = login;
         this.gui = gui;
     }
-
 
     public void display() {
         frame.setTitle(bundle.getString("welcome.title"));
@@ -139,7 +134,7 @@ public class LogginGui {
             if (login.authenticate(usernameOrEmail, password)) {
                 String username = login.getUsername(usernameOrEmail);
                 gui.setUsername(usernameOrEmail);
-                gui.setEmail(gui.getEmailByUsernameOrEmail(usernameOrEmail));
+                gui.setEmail(login.getEmail(usernameOrEmail));
                 gui.bootHomeScreen();
             } else {
                 JOptionPane.showMessageDialog(frame, "Invalid username or password");

@@ -9,7 +9,7 @@ import java.util.Observer;
 public class Gui extends JFrame implements Observer {
     private ChatBox chatBox;
     public String username;
-    private String email;
+    public String email;
     private JPanel chatListPanel;
     private String currentLanguage = "nl";
     private ResourceBundle bundle;
@@ -24,7 +24,7 @@ public class Gui extends JFrame implements Observer {
         chatBox = new ChatBox(new ArrayList<>());
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
         csvReader = new CSVReader("src/main/resources/data/chat's.csv");
-        login = new Login("src/main/resources/data/accounts.csv");
+        login = new Login("src\\main\\resources\\data\\accounts.csv");
         loadResourceBundle("nl");
         profileScreenGui = new ProfileScreenGui(this, bundle, login, this);
         bootWelcomeScreen();
@@ -48,11 +48,14 @@ public class Gui extends JFrame implements Observer {
         NieuwAccountGui nieuwAccountGui = new NieuwAccountGui(this, bundle, login, this);
         nieuwAccountGui.bootNewAccountScreen();
     }
+
     public void bootHomeScreen() {
         HomeScreenGui homeScreenGui = new HomeScreenGui(this, this, bundle, csvReader, currentChatNumber);
         homeScreenGui.display();
     }
+
     public void bootProfileScreen() {
+        System.out.println("Booting profile screen with username: " + username + " and email: " + email); // Debug statement
         profileScreenGui.setUsername(username);
         profileScreenGui.setEmail(email);
         profileScreenGui.showProfileScreen();
@@ -64,17 +67,20 @@ public class Gui extends JFrame implements Observer {
     }
 
     public String getEmailByUsernameOrEmail(String usernameOrEmail) {
-        Map<String, String[]> accounts = csvReader.readAccounts();
-        for (String[] accountInfo : accounts.values()) {
-            if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
-                return accountInfo[2];
-            }
+    Map<String, String[]> accounts = csvReader.readAccounts();
+    for (String[] accountInfo : accounts.values()) {
+        System.out.println("Checking account: " + accountInfo[0] + " with email: " + accountInfo[2]); // Debug statement
+        if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
+            return accountInfo[2];
         }
-        return null;
     }
+    return null;
+}
+
 
     public void setUsername(String username) {
         this.username = username;
+        System.out.println("Username set to: " + username); // Debug statement
         if (profileScreenGui != null) {
             profileScreenGui.setUsername(username);
         }
@@ -82,6 +88,7 @@ public class Gui extends JFrame implements Observer {
 
     public void setEmail(String email) {
         this.email = email;
+        System.out.println("Email set to: " + email); // Debug statement
         if (profileScreenGui != null) {
             profileScreenGui.setEmail(email);
         }

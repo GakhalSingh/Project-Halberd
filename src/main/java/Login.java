@@ -5,12 +5,6 @@ import java.util.Scanner;
 public class Login {
     private static CSVWriter csvWriter = new CSVWriter("src\\main\\resources\\data\\accounts.csv");
     private static CSVReader csvReader = new CSVReader("src\\main\\resources\\data\\accounts.csv");
-
-
-
-
-
-
     public Login(String csvFilePath) {
         this.csvWriter = new CSVWriter(csvFilePath);
         this.csvReader = new CSVReader(csvFilePath);
@@ -39,6 +33,17 @@ public class Login {
             String[] accountInfo = entry.getValue();
             if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
                 return accountInfo[0]; // Assuming the first field is the username
+            }
+        }
+        return null;
+    }
+    public String getEmail(String usernameOrEmail) {
+        Map<String, String[]> accounts = csvReader.readAccounts();
+
+        for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
+            String[] accountInfo = entry.getValue();
+            if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
+                return accountInfo[2]; // Assuming the first field is the username
             }
         }
         return null;

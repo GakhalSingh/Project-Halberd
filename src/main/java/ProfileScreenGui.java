@@ -30,36 +30,38 @@ public class ProfileScreenGui extends Component {
     }
 
     public void showProfileScreen() {
-        frame.setTitle("Over " + username);
-        JPanel contentPane = new JPanel(new BorderLayout());
-        JTextArea infoText = new JTextArea();
-        infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
-        infoText.setLineWrap(true);
-        infoText.setWrapStyleWord(true);
-        infoText.setText("Hallo " + username + "\n\n"
-                + "hier heb je wat informatie over je zelf XD: \n"
-                + username + "\n"
-                + email + "\n\n"
-                + "Informatie wijzigen? ");
+    System.out.println("Displaying profile screen for username: " + username + " and email: " + email); // Debug statement
+    frame.setTitle("Over " + username);
+    JPanel contentPane = new JPanel(new BorderLayout());
+    JTextArea infoText = new JTextArea();
+    infoText.setEditable(false);
+    infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+    infoText.setLineWrap(true);
+    infoText.setWrapStyleWord(true);
+    infoText.setText("Hallo " + username + "\n\n"
+            + "hier heb je wat informatie over jezelf XD: \n"
+            + username + "\n"
+            + email + "\n\n"
+            + "Informatie wijzigen? ");
 
-        JScrollPane scrollPane = new JScrollPane(infoText);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
+    JScrollPane scrollPane = new JScrollPane(infoText);
+    contentPane.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel navbar = gui.createNavbar();
-        contentPane.add(navbar, BorderLayout.NORTH);
+    JPanel navbar = gui.createNavbar();
+    contentPane.add(navbar, BorderLayout.NORTH);
 
-        JButton modifyButton = new JButton(bundle.getString("profile.modify"));
-        gui.styleButton(modifyButton);
-        modifyButton.addActionListener(e -> showModifyDialog());
-        contentPane.add(modifyButton, BorderLayout.SOUTH);
+    JButton modifyButton = new JButton(bundle.getString("profile.modify"));
+    gui.styleButton(modifyButton);
+    modifyButton.addActionListener(e -> showModifyDialog());
+    contentPane.add(modifyButton, BorderLayout.SOUTH);
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 600);
-        frame.setLocationRelativeTo(null);
-        frame.setContentPane(contentPane);
-        frame.setVisible(true);
-    }
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setSize(1000, 600);
+    frame.setLocationRelativeTo(null);
+    frame.setContentPane(contentPane);
+    frame.setVisible(true);
+}
+
 
     public void showModifyDialog() {
         JTextField newUsernameField = new JTextField(username, 20);
