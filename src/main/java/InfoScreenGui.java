@@ -25,20 +25,27 @@ public class InfoScreenGui {
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.WHITE);
 
+        JLabel titleLabel = new JLabel("A.I.S.H.A. (AI Study Help Assistant)", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        contentPane.add(titleLabel, BorderLayout.NORTH);
+
         JTextArea infoText = new JTextArea();
         infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
+        infoText.setFont(new Font("Arial", Font.PLAIN, 16));
         infoText.setLineWrap(true);
         infoText.setWrapStyleWord(true);
         infoText.setText("A.I.S.H.A. (AI Study Help Assistant) is een virtuele assistent ontworpen om studenten te helpen bij hun studie. "
                 + "Deze chatbot kan vragen beantwoorden, uitleg geven over verschillende onderwerpen en interactief leren stimuleren.\n\n"
                 + "Ontwikkeld door:\n"
-                + "- [Jin]\n"
-                + "- (Li)\n"
-                + "- |Joris|)\n"
-                + "- {Brian}\n");
+                + "- Jin\n"
+                + "- Li\n"
+                + "- Joris\n"
+                + "- Brian\n");
+        infoText.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JScrollPane scrollPane = new JScrollPane(infoText);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
         JPanel navbar = gui.createNavbar();
