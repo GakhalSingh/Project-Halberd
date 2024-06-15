@@ -29,6 +29,13 @@ public class Gui extends JFrame implements Observer {
     private String currentChatNumber;
 
 
+    private JTextField nameField;
+    private JTextField emailField;
+    private JPasswordField passwordField;
+    private JPasswordField confirmPasswordField;
+    private JButton createAccountButton;
+
+
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
         loadResourceBundle(currentLanguage);
@@ -38,204 +45,33 @@ public class Gui extends JFrame implements Observer {
         bootWelcomeScreen();
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
+    }
+
     private void loadResourceBundle(String languageCode) {
         Locale locale = new Locale(languageCode);
         bundle = ResourceBundle.getBundle("messages", locale);
         chatBox.addObserver(this);
     }
 
-    public void changeLanguage(String languageCode) {
-        currentLanguage = languageCode;
-        loadResourceBundle(languageCode);
-        bootWelcomeScreen();
-    }
-
     public void bootWelcomeScreen() {
-        setTitle(bundle.getString("welcome.title"));
-        setSize(1000, 600);
-        setMinimumSize(new Dimension(800, 600));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        JPanel contentPane = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                ImageIcon icon = new ImageIcon(getClass().getResource("\\img\\background.jpg"));
-                Image image = icon.getImage();
-                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-
-        setContentPane(contentPane);
-        contentPane.setLayout(new BorderLayout());
-
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        contentPane.add(panel, BorderLayout.CENTER);
-
-        setVisible(true);
-
-        BackgroundPanel mainPanel = new BackgroundPanel("/img/background.jpg");
-        mainPanel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(20, 20, 20, 20);
-
-        JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setOpaque(true);
-        leftPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
-
-        JLabel titleLabel = new JLabel(bundle.getString("home.chat"));
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel descriptionLabel = new JLabel(bundle.getString("info.about"));
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        leftPanel.add(titleLabel);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        leftPanel.add(descriptionLabel);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 0.5;
-        gbc.weighty = 1.0;
-        mainPanel.add(leftPanel, gbc);
-
-        JPanel rightPanel = new JPanel(new GridBagLayout());
-        rightPanel.setOpaque(false);
-        rightPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
-        GridBagConstraints rightGbc = new GridBagConstraints();
-        rightGbc.insets = new Insets(10, 10, 10, 10);
-        rightGbc.fill = GridBagConstraints.HORIZONTAL;
-
-        JLabel quickStartLabel = new JLabel(bundle.getString("welcome.login"));
-        quickStartLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        rightGbc.gridx = 0;
-        rightGbc.gridy = 0;
-        rightGbc.gridwidth = 2;
-        rightPanel.add(quickStartLabel, rightGbc);
-
-        JLabel usernameLabel = new JLabel(bundle.getString("welcome.username"));
-        rightGbc.gridx = 0;
-        rightGbc.gridy = 1;
-        rightGbc.gridwidth = 1;
-        rightPanel.add(usernameLabel, rightGbc);
-
-        JTextField usernameField = new JTextField(20);
-        rightGbc.gridx = 1;
-        rightGbc.gridy = 1;
-        rightPanel.add(usernameField, rightGbc);
-
-        JLabel passwordLabel = new JLabel(bundle.getString("welcome.password"));
-        rightGbc.gridx = 0;
-        rightGbc.gridy = 2;
-        rightPanel.add(passwordLabel, rightGbc);
-
-        JPasswordField passwordField = new JPasswordField(20);
-        rightGbc.gridx = 1;
-        rightGbc.gridy = 2;
-        rightPanel.add(passwordField, rightGbc);
-
-        JButton loginButton = new JButton(bundle.getString("welcome.login"));
-        loginButton.setBackground(new Color(52, 152, 219));
-        loginButton.setForeground(Color.WHITE);
-        rightGbc.gridx = 1;
-        rightGbc.gridy = 3;
-        rightGbc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(loginButton, rightGbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 0.5;
-        mainPanel.add(rightPanel, gbc);
-
-        add(mainPanel);
-
-        loginButton.addActionListener(e -> {
-            String usernameOrEmail = usernameField.getText();
-            String password = new String(passwordField.getPassword());
-
-            if (login.authenticate(usernameOrEmail, password)) {
-                this.username = usernameOrEmail;
-                this.email = getEmailByUsernameOrEmail(usernameOrEmail);
-                bootHomeScreen();
-            } else {
-                JOptionPane.showMessageDialog(Gui.this, "Invalid username or password");
-            }
-        });
-
-        JButton newAccountButton = new JButton(bundle.getString("welcome.newAccount"));
-        styleButton(newAccountButton);
-        rightGbc.gridx = 1;
-        rightGbc.gridy = 4;
-        rightGbc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(newAccountButton, rightGbc);
-
-        newAccountButton.addActionListener(e -> bootNewAccountScreen());
-
-        JButton languageButton = new JButton("Taal / Language");
-        languageButton.setBackground(new Color(52, 152, 219));
-        languageButton.setForeground(Color.WHITE);
-        GridBagConstraints langGbc = new GridBagConstraints();
-        langGbc.gridx = 1;
-        langGbc.gridy = 0;
-        langGbc.anchor = GridBagConstraints.NORTHEAST;
-        langGbc.insets = new Insets(10, 10, 0, 10);
-        mainPanel.add(languageButton, langGbc);
-
-        languageButton.addActionListener(e -> showLanguageSelector());
-
-        contentPane.add(mainPanel, BorderLayout.CENTER);
-
-        revalidate();
-        repaint();
+        LogginGui logginGui = new LogginGui(this, bundle, login, this);
+        logginGui.display();
     }
 
-    private void showLanguageSelector() {
-        JDialog languageDialog = new JDialog(this, bundle.getString("language.title"), true);
-        languageDialog.setLayout(new GridLayout(4, 1));
 
-        JButton nederlandsButton = new JButton("Nederlands");
-        JButton englishButton = new JButton("English");
-        JButton spaansButton = new JButton("Español");
-        JButton duitsButton = new JButton("Deutsch");
 
-        nederlandsButton.addActionListener(e -> {
-            changeLanguage("nl");
-            languageDialog.dispose();
-        });
-
-        englishButton.addActionListener(e -> {
-            changeLanguage("en");
-            languageDialog.dispose();
-        });
-
-        spaansButton.addActionListener(e -> {
-            changeLanguage("es");
-            languageDialog.dispose();
-        });
-
-        duitsButton.addActionListener(e -> {
-            changeLanguage("de");
-            languageDialog.dispose();
-        });
-
-        languageDialog.add(nederlandsButton);
-        languageDialog.add(englishButton);
-        languageDialog.add(spaansButton);
-        languageDialog.add(duitsButton);
-
-        languageDialog.pack();
-        languageDialog.setLocationRelativeTo(this);
-        languageDialog.setVisible(true);
-    }
-
-    private String getEmailByUsernameOrEmail(String usernameOrEmail) {
+    public String getEmailByUsernameOrEmail(String usernameOrEmail) {
         Map<String, String[]> accounts = csvReader.readAccounts();
 
         for (String[] accountInfo : accounts.values()) {
@@ -408,7 +244,7 @@ public class Gui extends JFrame implements Observer {
 
     }
 
-    private void styleButton(JButton button) {
+    public void styleButton(JButton button) {
         button.setFocusPainted(false);
         button.setBackground(new Color(52, 152, 219));
         button.setForeground(Color.WHITE);
@@ -601,84 +437,109 @@ private boolean saveAccountsToCSV(Map<String, String[]> accounts) {
     }
 
     public void bootNewAccountScreen() {
-    setTitle(bundle.getString("welcome.newAccount"));
-    JPanel contentPane = new JPanel(new BorderLayout()) {
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            ImageIcon icon = new ImageIcon(getClass().getResource("/img/background.jpg"));
-            Image image = icon.getImage();
-            g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-        }
-    };
 
-    JPanel formPanel = new JPanel(new GridBagLayout());
-    formPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
-    formPanel.setOpaque(false);
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(10, 10, 10, 10);
-    gbc.fill = GridBagConstraints.HORIZONTAL;
+        setTitle(bundle.getString("welcome.newAccount"));
 
-    JLabel nameLabel = new JLabel(bundle.getString("welcome.username"));
-    JTextField nameField = new JTextField(20);
-    JLabel emailLabel = new JLabel("Email:");
-    JTextField emailField = new JTextField(20);
-    JLabel passwordLabel = new JLabel(bundle.getString("welcome.password"));
-    JPasswordField passwordField = new JPasswordField(20);
-    JLabel confirmPasswordLabel = new JLabel(bundle.getString("welcome.password"));
-    JPasswordField confirmPasswordField = new JPasswordField(20);
+        JPanel contentPane = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageIcon icon = new ImageIcon(getClass().getResource("/img/background.jpg"));
+                Image image = icon.getImage();
+                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
 
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    formPanel.add(nameLabel, gbc);
-    gbc.gridx = 1;
-    formPanel.add(nameField, gbc);
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        formPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-    gbc.gridx = 0;
-    gbc.gridy = 1;
-    formPanel.add(emailLabel, gbc);
-    gbc.gridx = 1;
-    formPanel.add(emailField, gbc);
+        NewAccountScreenUsername(formPanel, gbc);
+        NewAccountScreenEmail(formPanel, gbc);
+        NewAccountScreenPassword(formPanel, gbc);
+        NewAccountScreenCPassword(formPanel, gbc);
 
-    gbc.gridx = 0;
-    gbc.gridy = 2;
-    formPanel.add(passwordLabel, gbc);
-    gbc.gridx = 1;
-    formPanel.add(passwordField, gbc);
-
-    gbc.gridx = 0;
-    gbc.gridy = 3;
-    formPanel.add(confirmPasswordLabel, gbc);
-    gbc.gridx = 1;
-    formPanel.add(confirmPasswordField, gbc);
-
-        JButton createAccountButton = new JButton(bundle.getString("welcome.newAccount"));
+        createAccountButton = new JButton(bundle.getString("welcome.newAccount"));
         styleButton(createAccountButton);
         gbc.gridx = 1;
         gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(createAccountButton, gbc);
 
-    contentPane.add(formPanel, BorderLayout.CENTER);
+        createAccountButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = nameField.getText();
+                String email = emailField.getText();
+                String password = new String(passwordField.getPassword());
+                String confirmPassword = new String(confirmPasswordField.getPassword());
+                String result = Login.nieuwAccount(name, email, password, confirmPassword);
+                JOptionPane.showMessageDialog(Gui.this, result);
 
-        createAccountButton.addActionListener(e -> {
-            String name = nameField.getText();
-            String email = emailField.getText();
-            String password = new String(passwordField.getPassword());
-            String confirmPassword = new String(confirmPasswordField.getPassword());
-            String result = Login.nieuwAccount(name, email, password, confirmPassword);
-            JOptionPane.showMessageDialog(this, result);
-
-            if (result.equals(bundle.getString("account.created") + ": " + name)) {
-                bootWelcomeScreen();
+                if (result.equals(bundle.getString("account.created") + ": " + name)) {
+                    bootWelcomeScreen();
+                }
             }
         });
+
+        contentPane.add(formPanel, BorderLayout.CENTER);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setLocationRelativeTo(null);
         setContentPane(contentPane);
         setVisible(true);
+    }
+
+    private void NewAccountScreenUsername(JPanel formPanel, GridBagConstraints gbc) {
+        JLabel nameLabel = new JLabel(bundle.getString("welcome.username"));
+        nameField = new JTextField(20);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(nameLabel, gbc);
+
+        gbc.gridx = 1;
+        formPanel.add(nameField, gbc);
+    }
+
+    private void NewAccountScreenEmail(JPanel formPanel, GridBagConstraints gbc) {
+        JLabel emailLabel = new JLabel("Email:");
+        emailField = new JTextField(20);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(emailLabel, gbc);
+
+        gbc.gridx = 1;
+        formPanel.add(emailField, gbc);
+    }
+
+    private void NewAccountScreenPassword(JPanel formPanel, GridBagConstraints gbc) {
+        JLabel passwordLabel = new JLabel(bundle.getString("welcome.password"));
+        passwordField = new JPasswordField(20);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(passwordLabel, gbc);
+
+        gbc.gridx = 1;
+        formPanel.add(passwordField, gbc);
+    }
+
+    private void NewAccountScreenCPassword(JPanel formPanel, GridBagConstraints gbc) {
+        JLabel confirmPasswordLabel = new JLabel(bundle.getString("welcome.password"));
+        confirmPasswordField = new JPasswordField(20);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        formPanel.add(confirmPasswordLabel, gbc);
+
+        gbc.gridx = 1;
+        formPanel.add(confirmPasswordField, gbc);
     }
 
     @Override
@@ -691,7 +552,4 @@ private boolean saveAccountsToCSV(Map<String, String[]> accounts) {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
-    }
 }
