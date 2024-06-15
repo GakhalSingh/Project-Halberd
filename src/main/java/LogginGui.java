@@ -14,6 +14,8 @@ public class LogginGui {
     private CSVWriter csvWriter;
     private CSVReader csvReader;
 
+    private NieuwAccountGui nieuwAccountGui;
+
     private String currentLanguage = "nl";
 
 
@@ -149,7 +151,7 @@ public class LogginGui {
         rightGbc.anchor = GridBagConstraints.CENTER;
         rightPanel.add(newAccountButton, rightGbc);
 
-        newAccountButton.addActionListener(e -> gui.bootNewAccountScreen());
+        newAccountButton.addActionListener(e -> gui.bootNieuwAccount());
 
         JButton languageButton = new JButton("Taal / Language");
         languageButton.setBackground(new Color(52, 152, 219));
