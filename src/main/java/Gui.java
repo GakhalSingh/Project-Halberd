@@ -45,6 +45,12 @@ public class Gui extends JFrame implements Observer {
         bootWelcomeScreen();
     }
 
+    public void loadResourceBundle(String languageCode) {
+        Locale locale = new Locale(languageCode);
+        bundle = ResourceBundle.getBundle("messages", locale);
+
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -58,12 +64,6 @@ public class Gui extends JFrame implements Observer {
         SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
     }
 
-    private void loadResourceBundle(String languageCode) {
-        Locale locale = new Locale(languageCode);
-        bundle = ResourceBundle.getBundle("messages", locale);
-        chatBox.addObserver(this);
-    }
-
     public void bootWelcomeScreen() {
         LogginGui logginGui = new LogginGui(this, bundle, login, this);
         logginGui.display();
@@ -72,6 +72,11 @@ public class Gui extends JFrame implements Observer {
     public  void bootNieuwAccount(){
         NieuwAccountGui nieuwAccountGui = new NieuwAccountGui(this, bundle, login, this);
         nieuwAccountGui.bootNewAccountScreen();
+    }
+
+    public void bootProfileScrean(){
+        ProfileScreenGui profileScreenGui = new ProfileScreenGui(this, bundle, login, this);
+        profileScreenGui.showProfileScreen();
     }
 
 
@@ -91,7 +96,9 @@ public class Gui extends JFrame implements Observer {
         homeScreenGui.display();
     }
 
-    private JPanel createNavbar() {
+
+
+    public JPanel createNavbar() {
         JPanel navbar = new JPanel(new GridLayout(1, 4));
         navbar.setBackground(new Color(52, 152, 219));
 
@@ -106,7 +113,7 @@ public class Gui extends JFrame implements Observer {
         styleLogoutButton(logoutButton);
 
         chatsButton.addActionListener(e -> bootHomeScreen());
-        profileButton.addActionListener(e -> showProfileScreen());
+        profileButton.addActionListener(e -> bootProfileScrean());
         infoButton.addActionListener(e -> showInfoScreen());
         logoutButton.addActionListener(e -> bootWelcomeScreen());
 
@@ -151,39 +158,9 @@ public class Gui extends JFrame implements Observer {
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
-    public void showProfileScreen() {
-        setTitle("Over " + username);
-        JPanel contentPane = new JPanel(new BorderLayout());
-        JTextArea infoText = new JTextArea();
-        infoText.setEditable(false);
-        infoText.setFont(new Font("Arial", Font.PLAIN, 14));
-        infoText.setLineWrap(true);
-        infoText.setWrapStyleWord(true);
-        infoText.setText("Hallo " + username + "\n\n"
-                + "hier heb je wat informatie over je zelf XD: \n"
-                + username + "\n"
-                + email + "\n\n"
-                + "Informatie wijzigen? ");
 
-        JScrollPane scrollPane = new JScrollPane(infoText);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel navbar = createNavbar();
-        contentPane.add(navbar, BorderLayout.NORTH);
-
-        JButton modifyButton = new JButton(bundle.getString("profile.modify"));
-        styleButton(modifyButton);
-        modifyButton.addActionListener(e -> showModifyDialog());
-        contentPane.add(modifyButton, BorderLayout.SOUTH);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setContentPane(contentPane);
-        setVisible(true);
-    }
-
-    private void showModifyDialog() {
+    public void showModifyDialog() {
     JTextField newUsernameField = new JTextField(username, 20);
     JPasswordField newPasswordField = new JPasswordField(20);
 
@@ -213,7 +190,7 @@ public class Gui extends JFrame implements Observer {
         if (updateAccountInfo(username, newUsername, newPassword)) {
             username = newUsername.isEmpty() ? username : newUsername;
             JOptionPane.showMessageDialog(this, bundle.getString("success.update"));
-            showProfileScreen();
+            bootProfileScrean();
         } else {
             JOptionPane.showMessageDialog(this, bundle.getString("error.update"));
         }

@@ -73,7 +73,7 @@ public class HomeScreenGui {
 
         contentPane.add(inputPanel, BorderLayout.SOUTH);
 
-        JPanel navbar = createNavbar();
+        JPanel navbar = gui.createNavbar();
         contentPane.add(navbar, BorderLayout.NORTH);
 
         chatListPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -106,33 +106,6 @@ public class HomeScreenGui {
 
             appendToChat(chatPane, formattedMessage);
         }
-    }
-
-    private JPanel createNavbar() {
-        JPanel navbar = new JPanel(new GridLayout(1, 4));
-        navbar.setBackground(new Color(52, 152, 219));
-
-        JButton chatsButton = new JButton(bundle.getString("home.chats"));
-        JButton profileButton = new JButton(bundle.getString("home.profile"));
-        JButton infoButton = new JButton(bundle.getString("home.info"));
-        JButton logoutButton = new JButton(bundle.getString("home.logout"));
-
-        gui.styleButton(chatsButton);
-        gui.styleButton(profileButton);
-        gui.styleButton(infoButton);
-        gui.styleLogoutButton(logoutButton);
-
-        chatsButton.addActionListener(e -> display());
-        profileButton.addActionListener(e -> gui.showProfileScreen());
-        infoButton.addActionListener(e -> gui.showInfoScreen());
-        logoutButton.addActionListener(e -> gui.bootWelcomeScreen());
-
-        navbar.add(chatsButton);
-        navbar.add(profileButton);
-        navbar.add(infoButton);
-        navbar.add(logoutButton);
-
-        return navbar;
     }
 
     public void populateChatListPanel() {
