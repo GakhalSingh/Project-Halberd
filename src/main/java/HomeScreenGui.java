@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class HomeScreenGui {
+public class HomeScreenGui extends Observer {
     private ChatBox chatBox;
     private JFrame frame;
     private Gui gui;
@@ -21,10 +21,6 @@ public class HomeScreenGui {
     private String email;
     private CSVWriter csvWriter;
     private Login login;
-
-
-
-
 
     public HomeScreenGui(JFrame frame, Gui gui, ResourceBundle bundle, CSVReader csvReader, String currentChatNumber) {
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
@@ -38,13 +34,13 @@ public class HomeScreenGui {
         this.currentChatNumber = currentChatNumber;
         chatBox = new ChatBox(new ArrayList<>());
 
+        // Adding SoundObserver
+        this.addObserver(new SoundObserver());
     }
 
     private void loadResourceBundle(String languageCode) {
-
         Locale locale = new Locale(languageCode);
         bundle = ResourceBundle.getBundle("messages", locale);
-
     }
 
     public void display() {
@@ -164,7 +160,7 @@ public class HomeScreenGui {
             LocalDateTime timestamp = LocalDateTime.now();
             csvWriter.logChatMessage(gui.username, message, currentChatNumber, timestamp);
 
-            String usernameFormatted = "<b><font face=\"Arial\">" +gui.username + ":</font></b> ";
+            String usernameFormatted = "<b><font face=\"Arial\">" + gui.username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + "<font face=\"Arial\">" + message + "</font><br>");
 
             String response = chatBox.generateResponse(message);
@@ -173,6 +169,8 @@ public class HomeScreenGui {
 
             csvWriter.logChatMessage("Aisha", response, currentChatNumber, LocalDateTime.now());
             inputField.setText("");
+
+            notify1Observers(message);
         }
     }
 
