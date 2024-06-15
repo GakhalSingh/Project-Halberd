@@ -9,12 +9,11 @@ public class ProfileScreenGui {
     private ResourceBundle bundle;
     private Login login;
     private Gui gui;
-    private CSVWriter csvWriter;
-    private CSVReader csvReader;
 
-    private NieuwAccountGui nieuwAccountGui;
 
-    private String currentLanguage = "nl";
+
+
+
 
 
     public ProfileScreenGui(JFrame frame, ResourceBundle bundle, Login login, Gui gui) {

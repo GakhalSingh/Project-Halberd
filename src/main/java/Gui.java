@@ -42,6 +42,7 @@ public class Gui extends JFrame implements Observer {
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
         csvReader = new CSVReader("src/main/resources/data/chat's.csv");
         login = new Login("src/main/resources/data/accounts.csv");
+        loadResourceBundle("nl");
         bootWelcomeScreen();
     }
 
