@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class HomeScreenGui extends Observer {
+public class HomeScreenGui {
     private ChatBox chatBox;
     private JFrame frame;
     private Gui gui;
@@ -34,8 +34,6 @@ public class HomeScreenGui extends Observer {
         this.currentChatNumber = currentChatNumber;
         chatBox = new ChatBox(new ArrayList<>());
 
-        // Adding SoundObserver
-        this.addObserver(new SoundObserver());
     }
 
     private void loadResourceBundle(String languageCode) {
@@ -170,7 +168,6 @@ public class HomeScreenGui extends Observer {
             csvWriter.logChatMessage("Aisha", response, currentChatNumber, LocalDateTime.now());
             inputField.setText("");
 
-            notify1Observers(message);
         }
     }
 

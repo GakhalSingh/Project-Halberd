@@ -7,4 +7,9 @@ public class AuthObserver implements ObserverListener {
             System.out.println(username + " failed authentication.");
         }
     }
+
+    @Override
+    public void update1(String message) {
+
+    }
 }
