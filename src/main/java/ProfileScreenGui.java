@@ -14,14 +14,19 @@ public class ProfileScreenGui extends Component {
     private Login login;
     private Gui gui;
 
-
-
-
     public ProfileScreenGui(JFrame frame, ResourceBundle bundle, Login login, Gui gui) {
         this.frame = frame;
         this.bundle = bundle;
         this.login = login;
         this.gui = gui;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void showProfileScreen() {
@@ -46,7 +51,7 @@ public class ProfileScreenGui extends Component {
 
         JButton modifyButton = new JButton(bundle.getString("profile.modify"));
         gui.styleButton(modifyButton);
-        modifyButton.addActionListener(e ->showModifyDialog());
+        modifyButton.addActionListener(e -> showModifyDialog());
         contentPane.add(modifyButton, BorderLayout.SOUTH);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -86,20 +91,21 @@ public class ProfileScreenGui extends Component {
             if (updateAccountInfo(username, newUsername, newPassword)) {
                 username = newUsername.isEmpty() ? username : newUsername;
                 JOptionPane.showMessageDialog(this, bundle.getString("success.update"));
-                gui.bootProfileScrean();
+                gui.bootProfileScreen();
             } else {
                 JOptionPane.showMessageDialog(this, bundle.getString("error.update"));
             }
         }
     }
+
     private boolean isUsernameAvailable(String newUsername) {
-        CSVReader reader = new CSVReader("data/accounts.csv");
+        CSVReader reader = new CSVReader("src/main/resources/data/accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
         return !accounts.containsKey(newUsername);
     }
 
     private boolean updateAccountInfo(String oldUsername, String newUsername, String newPassword) {
-        CSVReader reader = new CSVReader("data/accounts.csv");
+        CSVReader reader = new CSVReader("src/main/resources/data/accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
         if (accounts.containsKey(oldUsername)) {

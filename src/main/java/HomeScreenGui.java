@@ -162,9 +162,9 @@ public class HomeScreenGui {
         String message = inputField.getText().trim();
         if (!message.isEmpty()) {
             LocalDateTime timestamp = LocalDateTime.now();
-            csvWriter.logChatMessage(username, message, currentChatNumber, timestamp);
+            csvWriter.logChatMessage(gui.username, message, currentChatNumber, timestamp);
 
-            String usernameFormatted = "<b><font face=\"Arial\">" + username + ":</font></b> ";
+            String usernameFormatted = "<b><font face=\"Arial\">" +gui.username + ":</font></b> ";
             appendToChat(chatPane, usernameFormatted + "<font face=\"Arial\">" + message + "</font><br>");
 
             String response = chatBox.generateResponse(message);

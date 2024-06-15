@@ -26,6 +26,7 @@ public class LogginGui {
         this.gui = gui;
     }
 
+
     public void display() {
         frame.setTitle(bundle.getString("welcome.title"));
         frame.setSize(1000, 600);
@@ -136,6 +137,7 @@ public class LogginGui {
             String password = new String(passwordField.getPassword());
 
             if (login.authenticate(usernameOrEmail, password)) {
+                String username = login.getUsername(usernameOrEmail);
                 gui.setUsername(usernameOrEmail);
                 gui.setEmail(gui.getEmailByUsernameOrEmail(usernameOrEmail));
                 gui.bootHomeScreen();

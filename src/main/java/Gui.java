@@ -1,24 +1,14 @@
 import javax.swing.*;
 import java.util.*;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
 public class Gui extends JFrame implements Observer {
     private ChatBox chatBox;
-    private String username;
+    public String username;
     private String email;
     private JPanel chatListPanel;
     private String currentLanguage = "nl";
@@ -28,16 +18,7 @@ public class Gui extends JFrame implements Observer {
     private Login login;
     private String currentChatNumber;
 
-
-    private JTextField nameField;
-    private JTextField emailField;
-    private JPasswordField passwordField;
-    private JPasswordField confirmPasswordField;
-    private JButton createAccountButton;
-    private HomeScreenGui homeScreenGui;
-
-    private InfoScreenGui infoScreenGui;
-
+    private ProfileScreenGui profileScreenGui;
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
@@ -45,23 +26,14 @@ public class Gui extends JFrame implements Observer {
         csvReader = new CSVReader("src/main/resources/data/chat's.csv");
         login = new Login("src/main/resources/data/accounts.csv");
         loadResourceBundle("nl");
+        profileScreenGui = new ProfileScreenGui(this, bundle, login, this);
         bootWelcomeScreen();
     }
 
     public void loadResourceBundle(String languageCode) {
         Locale locale = new Locale(languageCode);
         bundle = ResourceBundle.getBundle("messages", locale);
-
     }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Gui().bootWelcomeScreen());
@@ -72,24 +44,27 @@ public class Gui extends JFrame implements Observer {
         logginGui.display();
     }
 
-    public  void bootNieuwAccount(){
+    public void bootNieuwAccount() {
         NieuwAccountGui nieuwAccountGui = new NieuwAccountGui(this, bundle, login, this);
         nieuwAccountGui.bootNewAccountScreen();
     }
-
-    public void bootProfileScrean(){
-        ProfileScreenGui profileScreenGui = new ProfileScreenGui(this, bundle, login, this);
+    public void bootHomeScreen() {
+        HomeScreenGui homeScreenGui = new HomeScreenGui(this, this, bundle, csvReader, currentChatNumber);
+        homeScreenGui.display();
+    }
+    public void bootProfileScreen() {
+        profileScreenGui.setUsername(username);
+        profileScreenGui.setEmail(email);
         profileScreenGui.showProfileScreen();
     }
-    public void bootInfoScreen(){
-        InfoScreenGui infoScreenGui = new InfoScreenGui(this,this,bundle);
+
+    public void bootInfoScreen() {
+        InfoScreenGui infoScreenGui = new InfoScreenGui(this, this, bundle);
         infoScreenGui.display();
     }
 
-
     public String getEmailByUsernameOrEmail(String usernameOrEmail) {
         Map<String, String[]> accounts = csvReader.readAccounts();
-
         for (String[] accountInfo : accounts.values()) {
             if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
                 return accountInfo[2];
@@ -98,12 +73,19 @@ public class Gui extends JFrame implements Observer {
         return null;
     }
 
-    public void bootHomeScreen() {
-        HomeScreenGui homeScreenGui = new HomeScreenGui(this, this, bundle, csvReader, currentChatNumber);
-        homeScreenGui.display();
+    public void setUsername(String username) {
+        this.username = username;
+        if (profileScreenGui != null) {
+            profileScreenGui.setUsername(username);
+        }
     }
 
-
+    public void setEmail(String email) {
+        this.email = email;
+        if (profileScreenGui != null) {
+            profileScreenGui.setEmail(email);
+        }
+    }
 
     public JPanel createNavbar() {
         JPanel navbar = new JPanel(new GridLayout(1, 4));
@@ -120,7 +102,7 @@ public class Gui extends JFrame implements Observer {
         styleLogoutButton(logoutButton);
 
         chatsButton.addActionListener(e -> bootHomeScreen());
-        profileButton.addActionListener(e -> bootProfileScrean());
+        profileButton.addActionListener(e -> bootProfileScreen());
         infoButton.addActionListener(e -> bootInfoScreen());
         logoutButton.addActionListener(e -> bootWelcomeScreen());
 
@@ -132,16 +114,12 @@ public class Gui extends JFrame implements Observer {
         return navbar;
     }
 
-
-
-
     public void styleChatButton(JButton button) {
         button.setBackground(new Color(52, 152, 219));
         button.setForeground(Color.WHITE);
         button.setFont(new Font("Arial", Font.BOLD, 14));
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
-
 
     public void styleButton(JButton button) {
         button.setFocusPainted(false);
@@ -158,15 +136,11 @@ public class Gui extends JFrame implements Observer {
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
-
     @Override
     public void update(Observable o, Object arg) {
         if (o instanceof ChatBox) {
             String message = (String) arg;
-            // Handle the update (e.g., append the new message to the chat pane)
             System.out.println("New message: " + message);
-            // Update the GUI (e.g., append the new message to the chat pane)
         }
     }
-
 }
