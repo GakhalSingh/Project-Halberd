@@ -4,53 +4,53 @@ import java.util.Scanner;
 
 public class Login {
     private static CSVWriter csvWriter = new CSVWriter("src\\main\\resources\\data\\accounts.csv");
-    private static CSVReader csvReader = new CSVReader("src\\main\\resources\\data\\accounts.csv");
+    private static CSVReader csvReader = new CSVReader("src/main/resources/data/accounts.csv");
+    public static Account loggedInGebruiker;
+
     public Login(String csvFilePath) {
         this.csvWriter = new CSVWriter(csvFilePath);
         this.csvReader = new CSVReader(csvFilePath);
-
     }
 
     public boolean authenticate(String usernameOrEmail, String password) {
-        CSVReader reader = new CSVReader("data\\accounts.csv");
-
+        CSVReader reader = new CSVReader("data/accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
         for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
             String[] accountInfo = entry.getValue();
             if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
+                loggedInGebruiker = new Account(accountInfo[0], accountInfo[2], accountInfo[1]);
+                System.out.println(loggedInGebruiker);
                 return true;
             }
         }
         return false;
     }
 
-
     public String getUsername(String usernameOrEmail) {
         Map<String, String[]> accounts = csvReader.readAccounts();
-
         for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
             String[] accountInfo = entry.getValue();
             if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
-                return accountInfo[0]; // Assuming the first field is the username
+                return accountInfo[0];
             }
         }
         return null;
     }
+
     public String getEmail(String usernameOrEmail) {
         Map<String, String[]> accounts = csvReader.readAccounts();
-
         for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
             String[] accountInfo = entry.getValue();
             if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
-                return accountInfo[2]; // Assuming the first field is the username
+                return accountInfo[2];
             }
         }
         return null;
     }
+
     public static String nieuwAccount(String username, String email, String password, String confirmPassword) {
         Map<String, String[]> accounts = csvReader.readAccounts();
-
         if (accounts.containsKey(username) || accounts.containsKey(email)) {
             return "Gebruikersnaam of email bestaat al, probeer een andere.";
         } else if (!password.equals(confirmPassword)) {

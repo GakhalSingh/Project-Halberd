@@ -24,7 +24,7 @@ public class Gui extends JFrame implements Observer {
         chatBox = new ChatBox(new ArrayList<>());
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
         csvReader = new CSVReader("src/main/resources/data/chat's.csv");
-        login = new Login("src\\main\\resources\\data\\accounts.csv");
+        login = new Login("src/main/resources/data/accounts.csv");
         loadResourceBundle("nl");
         profileScreenGui = new ProfileScreenGui(this, bundle, login, this);
         bootWelcomeScreen();
@@ -55,7 +55,6 @@ public class Gui extends JFrame implements Observer {
     }
 
     public void bootProfileScreen() {
-        System.out.println("Booting profile screen with username: " + username + " and email: " + email); // Debug statement
         profileScreenGui.setUsername(username);
         profileScreenGui.setEmail(email);
         profileScreenGui.showProfileScreen();
@@ -67,16 +66,15 @@ public class Gui extends JFrame implements Observer {
     }
 
     public String getEmailByUsernameOrEmail(String usernameOrEmail) {
-    Map<String, String[]> accounts = csvReader.readAccounts();
-    for (String[] accountInfo : accounts.values()) {
-        System.out.println("Checking account: " + accountInfo[0] + " with email: " + accountInfo[2]); // Debug statement
-        if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
-            return accountInfo[2];
+        Map<String, String[]> accounts = csvReader.readAccounts();
+        for (String[] accountInfo : accounts.values()) {
+            System.out.println("Checking account: " + accountInfo[0] + " with email: " + accountInfo[2]); // Debug statement
+            if (accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) {
+                return accountInfo[2];
+            }
         }
+        return null;
     }
-    return null;
-}
-
 
     public void setUsername(String username) {
         this.username = username;
@@ -151,3 +149,4 @@ public class Gui extends JFrame implements Observer {
         }
     }
 }
+

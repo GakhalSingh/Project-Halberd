@@ -30,60 +30,59 @@ public class ProfileScreenGui extends Component {
     }
 
     public void showProfileScreen() {
-    System.out.println("Displaying profile screen for username: " + username + " and email: " + email);
-    frame.setTitle("Profiel van " + username);
-    JPanel contentPane = new JPanel(new BorderLayout());
-    contentPane.setBackground(Color.WHITE);
+        System.out.println("Displaying profile screen for username: " + username + " and email: " + email);
+        frame.setTitle("Profiel van " + username);
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBackground(Color.WHITE);
 
-    JPanel infoPanel = new JPanel(new BorderLayout());
-    infoPanel.setBackground(Color.WHITE);
+        JPanel infoPanel = new JPanel(new BorderLayout());
+        infoPanel.setBackground(Color.WHITE);
 
-    String profileText = ("<html><div style='text-align: center;'>"
-            + "<h2>Hallo " + username + "</h2>"
-            + "<p>Gevonden gegevens:</p>"
-            + "<p><b>Gebruikersnaam:</b> " + username + "</p>"
-            + "<p><b>Email:</b> " + email + "</p>"
-            + "<p>Klik op de knop onderaan het scherm om uw informatie te wijzigen.</p><hr>"
-            + "</div>"
-            + "<p>░░░░░░░█▐▓▓░████▄▄▄█▀▄▓▓▓▌█</p>"
-            + "<p>░░░░░▄█▌▀▄▓▓▄▄▄▄▀▀▀▄▓▓▓▓▓▌█</p>"
-            + "<p>░░░▄█▀▀▄▓█▓▓▓▓▓▓▓▓▓▓▓▓▀░▓▌█</p>"
-            + "<p>░░█▀▄▓▓▓███▓▓▓███▓▓▓▄░░▄▓▐█▌</p>"
-            + "<p>░█▌▓▓▓▀▀▓▓▓▓███▓▓▓▓▓▓▓▄▀▓▓▐█</p>"
-            + "<p>▐█▐██▐░▄▓▓▓▓▓▀▄░▀▓▓▓▓▓▓▓▓▌█▌</p>"
-            + "<p>█▌███▓▓▓▓▓▓▓▓▐░░▄▓▓███▓▓▓▄▀▐█</p>"
-            + "<p>█▐█▓▀░░▀▓▓▓▓▓▓▓▓▓██████▓▓▓▓▐█</p>"
-            + "<p>▌▓▄▌▀░▀░▐▀█▄▓▓██████████▓▓▓▌█▌</p>"
-            + "<p>▌▓▓▓▄▄▀▀▓▓▓▀▓▓▓▓▓▓▓▓█▓█▓█▓▓▌█▌</p>"
-            + "<p>█▐▓▓▓▓▓▓▄▄▄▓▓▓▓▓▓█▓█▓█▓█▓▓▓▐█</p>"
-            + "</html>");
+        String profileText = ("<html><div style='text-align: center;'>"
+                + "<h2>Hallo " + username + "</h2>"
+                + "<p>Gevonden gegevens:</p>"
+                + "<p><b>Gebruikersnaam:</b> " + Login.loggedInGebruiker.getUserName() + "</p>"
+                + "<p><b>Email:</b> " + Login.loggedInGebruiker.getEmail() + "</p>"
+                + "<p>Klik op de knop onderaan het scherm om uw informatie te wijzigen.</p><hr>"
+                + "</div>"
+                + "<p>░░░░░░░█▐▓▓░████▄▄▄█▀▄▓▓▓▌█</p>"
+                + "<p>░░░░░▄█▌▀▄▓▓▄▄▄▄▀▀▀▄▓▓▓▓▓▌█</p>"
+                + "<p>░░░▄█▀▀▄▓█▓▓▓▓▓▓▓▓▓▓▓▓▀░▓▌█</p>"
+                + "<p>░░█▀▄▓▓▓███▓▓▓███▓▓▓▄░░▄▓▐█▌</p>"
+                + "<p>░█▌▓▓▓▀▀▓▓▓▓███▓▓▓▓▓▓▓▄▀▓▓▐█</p>"
+                + "<p>▐█▐██▐░▄▓▓▓▓▓▀▄░▀▓▓▓▓▓▓▓▓▌█▌</p>"
+                + "<p>█▌███▓▓▓▓▓▓▓▓▐░░▄▓▓███▓▓▓▄▀▐█</p>"
+                + "<p>█▐█▓▀░░▀░▐▀█▄▓▓██████████▓▓▓▐█</p>"
+                + "<p>▌▓▄▌▀░▀░▐▀█▄▓▓██████████▓▓▓▌█▌</p>"
+                + "<p>▌▓▓▓▄▄▀▀▓▓▓▀▓▓▓▓▓▓▓▓█▓█▓█▓▓▌█▌</p>"
+                + "<p>█▐▓▓▓▓▓▓▄▄▄▓▓▓▓▓▓█▓█▓█▓█▓▓▓▐█</p>"
+                + "</html>");
 
-    JLabel infoText = new JLabel(profileText);
-    JScrollPane scrollPane = new JScrollPane(infoText);
+        JLabel infoText = new JLabel(profileText);
+        JScrollPane scrollPane = new JScrollPane(infoText);
         infoText.setFont(new Font("Arial", Font.PLAIN, 16));
         infoText.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         infoPanel.add(infoText, BorderLayout.CENTER);
         contentPane.add(infoPanel, BorderLayout.CENTER);
 
-    JPanel navbar = gui.createNavbar();
-    contentPane.add(navbar, BorderLayout.NORTH);
+        JPanel navbar = gui.createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    JButton modifyButton = new JButton(bundle.getString("profile.modify"));
-    gui.styleButton(modifyButton);
+        JButton modifyButton = new JButton(bundle.getString("profile.modify"));
+        gui.styleButton(modifyButton);
         modifyButton.addActionListener(e -> showModifyDialog());
         buttonPanel.add(modifyButton);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setSize(1000, 600);
-    frame.setLocationRelativeTo(null);
-    frame.setContentPane(contentPane);
-    frame.setVisible(true);
-}
-
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1000, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setContentPane(contentPane);
+        frame.setVisible(true);
+    }
 
     public void showModifyDialog() {
         JTextField newUsernameField = new JTextField(username, 20);
@@ -161,3 +160,4 @@ public class ProfileScreenGui extends Component {
         }
     }
 }
+
