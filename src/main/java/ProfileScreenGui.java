@@ -30,13 +30,13 @@ public class ProfileScreenGui extends Component {
     }
 
     public void showProfileScreen() {
-    System.out.println("Displaying profile screen for username: " + username + " and email: " + email);
-    frame.setTitle("Profiel van " + username);
-    JPanel contentPane = new JPanel(new BorderLayout());
-    contentPane.setBackground(Color.WHITE);
+        System.out.println("Displaying profile screen for username: " + username + " and email: " + email);
+        frame.setTitle("Profiel van " + username);
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBackground(Color.WHITE);
 
-    JPanel infoPanel = new JPanel(new BorderLayout());
-    infoPanel.setBackground(Color.WHITE);
+        JPanel infoPanel = new JPanel(new BorderLayout());
+        infoPanel.setBackground(Color.WHITE);
 
     String profileText = ("<html><div style='text-align: center;'>"
             + "<h2>Hallo " + username + "</h2>"
@@ -58,34 +58,33 @@ public class ProfileScreenGui extends Component {
             + "<p>█▐▓▓▓▓▓▓▄▄▄▓▓▓▓▓▓█▓█▓█▓█▓▓▓▐█</p>"
             + "</html>");
 
-    JLabel infoText = new JLabel(profileText);
-    JScrollPane scrollPane = new JScrollPane(infoText);
+        JLabel infoText = new JLabel(profileText);
+        JScrollPane scrollPane = new JScrollPane(infoText);
         infoText.setFont(new Font("Arial", Font.PLAIN, 16));
         infoText.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         infoPanel.add(infoText, BorderLayout.CENTER);
         contentPane.add(infoPanel, BorderLayout.CENTER);
 
-    JPanel navbar = gui.createNavbar();
-    contentPane.add(navbar, BorderLayout.NORTH);
+        JPanel navbar = gui.createNavbar();
+        contentPane.add(navbar, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    JButton modifyButton = new JButton(bundle.getString("profile.modify"));
-    gui.styleButton(modifyButton);
-        modifyButton.addActionListener(e -> showModifyDialog());
+        JButton modifyButton = new JButton(bundle.getString("profile.modify"));
+        gui.styleButton(modifyButton);
+        modifyButton.addActionListener(e -> showModifyDialog(contentPane));
         buttonPanel.add(modifyButton);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setSize(1000, 600);
-    frame.setLocationRelativeTo(null);
-    frame.setContentPane(contentPane);
-    frame.setVisible(true);
-}
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1000, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setContentPane(contentPane);
+        frame.setVisible(true);
+    }
 
-
-    public void showModifyDialog() {
+    public void showModifyDialog(Component parentComponent) {
         JTextField newUsernameField = new JTextField(username, 20);
         JPasswordField newPasswordField = new JPasswordField(20);
 
@@ -95,29 +94,29 @@ public class ProfileScreenGui extends Component {
         panel.add(new JLabel(bundle.getString("profile.modify") + " " + bundle.getString("welcome.password")));
         panel.add(newPasswordField);
 
-        int result = JOptionPane.showConfirmDialog(this, panel, bundle.getString("profile.modify"), JOptionPane.OK_CANCEL_OPTION);
+        int result = JOptionPane.showConfirmDialog(parentComponent, panel, bundle.getString("profile.modify"), JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             String newUsername = newUsernameField.getText().trim();
             String newPassword = new String(newPasswordField.getPassword()).trim();
 
             if (newUsername.isEmpty() && newPassword.isEmpty()) {
-                JOptionPane.showMessageDialog(this, bundle.getString("error.notempty"));
+                JOptionPane.showMessageDialog(parentComponent, bundle.getString("error.notempty"));
                 return;
             }
 
             if (!newUsername.isEmpty()) {
                 if (!isUsernameAvailable(newUsername)) {
-                    JOptionPane.showMessageDialog(this, bundle.getString("error.usernameexists"));
+                    JOptionPane.showMessageDialog(parentComponent, bundle.getString("error.usernameexists"));
                     return;
                 }
             }
 
             if (updateAccountInfo(username, newUsername, newPassword)) {
                 username = newUsername.isEmpty() ? username : newUsername;
-                JOptionPane.showMessageDialog(this, bundle.getString("success.update"));
+                JOptionPane.showMessageDialog(parentComponent, bundle.getString("success.update"));
                 gui.bootProfileScreen();
             } else {
-                JOptionPane.showMessageDialog(this, bundle.getString("error.update"));
+                JOptionPane.showMessageDialog(parentComponent, bundle.getString("error.update"));
             }
         }
     }
@@ -129,7 +128,7 @@ public class ProfileScreenGui extends Component {
     }
 
     private boolean updateAccountInfo(String oldUsername, String newUsername, String newPassword) {
-        CSVReader reader = new CSVReader("src/main/resources/data/accounts.csv");
+        CSVReader reader = new CSVReader("data/accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
         if (accounts.containsKey(oldUsername)) {

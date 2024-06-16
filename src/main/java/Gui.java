@@ -10,8 +10,6 @@ public class Gui extends JFrame implements Observer {
     private ChatBox chatBox;
     public String username;
     public String email;
-    private JPanel chatListPanel;
-    private String currentLanguage = "nl";
     private ResourceBundle bundle;
     private CSVWriter csvWriter;
     private CSVReader csvReader;
@@ -24,7 +22,7 @@ public class Gui extends JFrame implements Observer {
         chatBox = new ChatBox(new ArrayList<>());
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
         csvReader = new CSVReader("src/main/resources/data/chat's.csv");
-        login = new Login("src\\main\\resources\\data\\accounts.csv");
+        login = new Login("data\\accounts.csv");
         loadResourceBundle("nl");
         profileScreenGui = new ProfileScreenGui(this, bundle, login, this);
         bootWelcomeScreen();

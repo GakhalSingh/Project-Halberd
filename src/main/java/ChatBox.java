@@ -43,54 +43,10 @@ public class ChatBox extends Observable {
         this.notificationSound = new audio();
     }
 
-    public List<ChatMessage> getMessages() {
-        return messages;
-    }
-
-    public void addMessage(ChatMessage message) {
-        messages.add(message);
-        setChanged();
-        notifyObservers(message);
-    }
-
-    public static ChatBox readFromCsvFile(String filePath) throws IOException {
-        List<ChatMessage> messages = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] fields = line.split(";");
-                if (fields.length == 2) {
-                    messages.add(new ChatMessage(fields[0], fields[1]));
-                }
-            }
-        }
-        return new ChatBox(messages);
-    }
 
     public String generateResponse(String message) {
         String response = model.chat(message);
         notificationSound.playSound();
         return response;
-    }
-
-    private Map<String, List<String>> readDataFromCSV(String filePath) {
-        Map<String, List<String>> dataMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(filePath)))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(";");
-                if (values.length == 2) {
-                    String key = values[0].trim();
-                    String value = values[1].trim();
-                    if (!dataMap.containsKey(key)) {
-                        dataMap.put(key, new ArrayList<>());
-                    }
-                    dataMap.get(key).add(value);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return dataMap;
     }
 }
