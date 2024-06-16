@@ -14,12 +14,6 @@ public class InfoScreenGui {
         this.bundle = bundle;
     }
 
-    private void loadResourceBundle(String languageCode) {
-        Locale locale = new Locale(languageCode);
-        bundle = ResourceBundle.getBundle("messages", locale);
-
-    }
-
     public void display() {
         frame.setTitle(bundle.getString("home.info"));
         JPanel contentPane = new JPanel(new BorderLayout());

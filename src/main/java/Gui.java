@@ -10,8 +10,6 @@ public class Gui extends JFrame implements Observer {
     private ChatBox chatBox;
     public String username;
     public String email;
-    private JPanel chatListPanel;
-    private String currentLanguage = "nl";
     private ResourceBundle bundle;
     private CSVWriter csvWriter;
     private CSVReader csvReader;
