@@ -127,7 +127,7 @@ public class ProfileScreenGui extends Component {
         return !accounts.containsKey(newUsername);
     }
 
-    private boolean updateAccountInfo(String oldUsername, String newUsername, String newPassword) {
+    public boolean updateAccountInfo(String oldUsername, String newUsername, String newPassword) {
         CSVReader reader = new CSVReader("data/accounts.csv");
         Map<String, String[]> accounts = reader.readAccounts();
 
