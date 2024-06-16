@@ -12,7 +12,7 @@ public class CSVWriter {
     }
 
     public void CSVAccountadder(String userName, String email, String wachtwoord) {
-        try (FileWriter writer = new FileWriter(bestandsnaam, true)) {
+        try (FileWriter writer = new FileWriter("src/main/resources/data/accounts.csv", true)) {
             writer.append(userName).append(",").append(wachtwoord).append(",").append(email).append("\n");
         } catch (IOException e) {
             e.printStackTrace();
