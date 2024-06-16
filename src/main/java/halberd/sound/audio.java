@@ -6,13 +6,16 @@ import javazoom.jl.player.Player;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class audio {
     private final String filePath = "src/main/resources/mp3/msn-sound_1.mp3";
 
     public void playSound() {
-        try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
-            Player player = new Player(fileInputStream);
+        try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
+            Player player = new Player(is);
             player.play();
         } catch (FileNotFoundException e) {
             System.err.println("MP3 file not found: " + e.getMessage());
