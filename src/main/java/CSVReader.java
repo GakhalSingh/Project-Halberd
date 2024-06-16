@@ -10,12 +10,7 @@ public class CSVReader {
 
     public Map<String, String[]> readAccounts() {
         Map<String, String[]> accounts = new HashMap<>();
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(filePath)) {
-            if (is == null) {
-                System.err.println("File not found: " + filePath);
-                return accounts;
-            }
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        try (BufferedReader br = new BufferedReader(new FileReader(new File("src/main/resources/data/accounts.csv")))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");

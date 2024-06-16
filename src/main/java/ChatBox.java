@@ -17,6 +17,7 @@ import java.util.Observable;
 
 public class ChatBox extends Observable {
     private List<ChatMessage> messages;
+    private Observer observer;
     private final AI model;
     private final audio notificationSound;
 
@@ -46,6 +47,7 @@ public class ChatBox extends Observable {
 
     public String generateResponse(String message) {
         String response = model.chat(message);
+
         notificationSound.playSound();
         return response;
     }
