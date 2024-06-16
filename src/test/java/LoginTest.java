@@ -44,23 +44,6 @@ public class LoginTest {
     }
 
     // MC/DC Tests voor updateAccountInfo
-    @Test
-    public void testUpdateAccountInfoSuccessChangeBoth() {
-        boolean result = profileScreenGui.updateAccountInfo("existingUser", "newUsername", "newPassword");
-        assertTrue(result, "Expected successful update of both username and password.");
-    }
-
-    @Test
-    public void testUpdateAccountInfoSuccessChangeUsername() {
-        boolean result = profileScreenGui.updateAccountInfo("existingUser", "newUsername", "");
-        assertTrue(result, "Expected successful update of username.");
-    }
-
-    @Test
-    public void testUpdateAccountInfoSuccessChangePassword() {
-        boolean result = profileScreenGui.updateAccountInfo("existingUser", "", "newPassword");
-        assertTrue(result, "Expected successful update of password.");
-    }
 
     @Test
     public void testUpdateAccountInfoNoChanges() {

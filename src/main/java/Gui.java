@@ -20,6 +20,7 @@ public class Gui extends JFrame implements Observer {
 
     public Gui() {
         chatBox = new ChatBox(new ArrayList<>());
+        chatBox.addObserver(this); // Registering Gui as an observer
         csvWriter = new CSVWriter("src/main/resources/data/chat's.csv");
         csvReader = new CSVReader("src/main/resources/data/chat's.csv");
         login = new Login("data\\accounts.csv");
