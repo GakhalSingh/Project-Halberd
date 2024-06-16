@@ -2,7 +2,7 @@ import java.io.FileReader;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Login {
+public class Login extends AuthObserver{
     private static CSVWriter csvWriter = new CSVWriter("src\\main\\resources\\data\\accounts.csv");
     private static CSVReader csvReader = new CSVReader("src\\main\\resources\\data\\accounts.csv");
     public Login(String csvFilePath) {
@@ -19,9 +19,11 @@ public class Login {
         for (Map.Entry<String, String[]> entry : accounts.entrySet()) {
             String[] accountInfo = entry.getValue();
             if ((accountInfo[0].equals(usernameOrEmail) || accountInfo[2].equals(usernameOrEmail)) && accountInfo[1].equals(password)) {
+                update(usernameOrEmail,true);
                 return true;
             }
         }
+        update(usernameOrEmail,false);
         return false;
     }
 
